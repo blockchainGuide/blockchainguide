@@ -1,10 +1,18 @@
 
 
+> 死磕以太坊源码分析之p2p节点发现
+
+在阅读节点发现源码之前必须要理解kadmilia算法，[可以参考：KAD算法详解](https://github.com/blockchainGuide/blockchainguide/blob/main/%E4%B8%BB%E6%B5%81%E5%8C%BA%E5%9D%97%E9%93%BE/ethereum/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/p2p/KAD%E7%AE%97%E6%B3%95.md)。
+
 ## 节点发现概述
 
 节点发现，使本地节点得知其他节点的信息，进而加入到p2p网络中。
 
 以太坊的节点发现基于类似的kademlia算法，源码中有两个版本，v4和v5。v4适用于全节点，通过`discover.ListenUDP`使用，v5适用于轻节点通过`discv5.ListenUDP`使用，本文介绍的是v4版本。
+
+节点发现功能主要涉及 **Server** **Table** **udp** 这几个数据结构，它们有独自的事件响应循环，节点发现功能便是它们互相协作完成的。其中，每个以太坊客户端启动后都会在本地运行一个**Server**，并将网络拓扑中相邻的节点视为**Node**，而**Table**是**Node**的容器，**udp**则是负责维持底层的连接。这些结构的关系如下图：
+
+![image-20201123210628944](https://tva1.sinaimg.cn/large/0081Kckwgy1gkzetbpzowj30z00egtbh.jpg)
 
 ## p2p服务开启节点发现
 
@@ -100,7 +108,9 @@ tab, err := newTable(t, ln.Database(), cfg.Bootnodes, t.log)
 - tab.seedRand：使用提供的种子值将生成器初始化为确定性状态
 - loadSeedNodes：加载种子节点；从保留已知节点的数据库中随机的抽取30个节点，再加上引导节点列表中的节点，放置入k桶中，如果K桶没有空间，则假如到替换列表中。
 
-#### 2.刷新K桶
+#### 2.测试邻居节点连通性
+
+首先知道UDP协议是没有连接的概念的，所以需要不断的ping 来测试对端节点是否正常，在新建路由表之后，就来到下面的循环，不断的去做上面的事。
 
 ```go
 go tab.loop()
@@ -109,10 +119,18 @@ go tab.loop()
 定时运行`doRefresh`、`doRevalidate`、`copyLiveNodes`进行刷新K桶。
 
 以太坊的k桶设置：
-`alpha` ：3
-`nBuckets`：k桶数量为17
-`bucketSize`：k桶中最多存16个节点
-`maxReplacements`：每个k桶的候选节点列表最多存10个节点
+
+```go
+const (
+	alpha           = 3  // Kademlia并发参数, 是系统内一个优化参数,控制每次从K桶最多取出节点个数,ethereum取值3
+  
+	bucketSize      = 16 // K桶大小(可容纳节点数)
+  
+	maxReplacements = 10 // 每桶更换列表的大小
+	hashBits          = len(common.Hash{}) * 8 //每个节点ID长度,32*8=256, 32位16进制
+	nBuckets          = hashBits / 15       //  K桶个数
+  ）
+```
 
 首先搞清楚这三个定时器运行的时间：
 
@@ -162,15 +180,14 @@ doRefresh对随机目标执行查找以保持K桶已满。如果表为空（初�
    ```go
    unc (t *UDPv4) findnode(toid enode.ID, toaddr *net.UDPAddr, target encPubkey) ([]*node, error) {
    	t.ensureBond(toid, toaddr)
-   
-   	// Add a matcher for 'neighbours' replies to the pending reply queue. The matcher is
-   	// active until enough nodes have been received.
    	nodes := make([]*node, 0, bucketSize)
    	nreceived := 0
+     // 设置回应回调函数，等待类型为neighborsPacket的邻近节点包，如果类型对，就执行回调请求
    	rm := t.pending(toid, toaddr.IP, p_neighborsV4, func(r interface{}) (matched bool, requestDone bool) {
    		reply := r.(*neighborsV4)
    		for _, rn := range reply.Nodes {
    			nreceived++
+         // 得到一个简单的node结构
    			n, err := t.nodeFromRPC(toaddr, rn)
    			if err != nil {
    				t.log.Trace("Invalid neighbor node received", "ip", rn.IP, "addr", toaddr, "err", err)
@@ -180,6 +197,7 @@ doRefresh对随机目标执行查找以保持K桶已满。如果表为空（初�
    		}
    		return true, nreceived >= bucketSize
    	})
+     //上面了一个管道事件，下面开始发送真正的findnode报文，然后进行等待了
    	t.send(toaddr, toid, &findnodeV4{
    		Target:     target,
    		Expiration: uint64(time.Now().Add(expiration).Unix()),
@@ -339,10 +357,39 @@ func (req *findnodeV4) handle(t *UDPv4, from *net.UDPAddr, fromID enode.ID, mac 
    ...
 }
    ```
+   
+   我们这里就稍微介绍下如何处理`findnode`的消息：
+   
+   ```go
+   func (req *findnodeV4) handle(t *UDPv4, from *net.UDPAddr, fromID enode.ID, mac []byte) {
+   	// 确定最近的节点
+   	target := enode.ID(crypto.Keccak256Hash(req.Target[:]))
+   	t.tab.mutex.Lock()
+   	//最接近的返回表中最接近给定id的n个节点
+   	closest := t.tab.closest(target, bucketSize, true).entries
+   	t.tab.mutex.Unlock()
+   	// 以每个数据包最多maxNeighbors的块的形式发送邻居，以保持在数据包大小限制以下。
+   	p := neighborsV4{Expiration: uint64(time.Now().Add(expiration).Unix())}
+   	var sent bool
+   	for _, n := range closest { //扫描这些最近的节点列表，然后一个包一个包的发送给对方
+   		if netutil.CheckRelayIP(from.IP, n.IP()) == nil {
+   			p.Nodes = append(p.Nodes, nodeToRPC(n))
+   		}
+   		if len(p.Nodes) == maxNeighbors {
+   			t.send(from, fromID, &p)//给对方发送 neighborsPacket 包，里面包含节点列表
+   			p.Nodes = p.Nodes[:0]
+   			sent = true
+   		}
+   	}
+   	if len(p.Nodes) > 0 || !sent {
+   		t.send(from, fromID, &p)
+   	}
+   }
+   ```
+   
+   首先先确定最近的节点，再一个包一个包的发给对方，并校验节点的IP，最后把有效的节点发送给请求方。
 
----
-
-
+----
 
 ## 涉及的结构体：
 
@@ -373,17 +420,26 @@ func (req *findnodeV4) handle(t *UDPv4, from *net.UDPAddr, fromID enode.ID, mac 
 
 ![image-20201112104254003](https://tva1.sinaimg.cn/large/0081Kckwgy1gkm6yzncc3j30t00ggdim.jpg)
 
------
+-------
 
-## 重点阅读文件
+## 思维导图
 
-> p2p/server.go
->
+> [思维导图获取地址](https://github.com/blockchainGuide/blockchainguide/tree/main/%E4%B8%BB%E6%B5%81%E5%8C%BA%E5%9D%97%E9%93%BE/ethereum/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/p2p)
+
+![image-20201123211034861](https://tva1.sinaimg.cn/large/0081Kckwgy1gkzexhy1kqj31d80mqafh.jpg)
 
 ## 参考文档
 
-> https://www.cnblogs.com/xiaolincoding/p/12571184.html (ping 工作原理)
+> http://mindcarver.cn/     ⭐️⭐️⭐️⭐️
+>
+> https://github.com/blockchainGuide/ ⭐️⭐️⭐️⭐️
+>
+> https://www.cnblogs.com/xiaolincoding/p/12571184.html 
+>
+> http://qjpcpu.github.io/blog/2018/01/29/shen-ru-ethereumyuan-ma-p2pmo-kuai-ji-chu-jie-gou/
 >
 > https://www.jianshu.com/p/b232c870dcd2
 >
 > https://bbs.huaweicloud.com/blogs/113684
+>
+> https://www.jianshu.com/p/94d02a41a146
