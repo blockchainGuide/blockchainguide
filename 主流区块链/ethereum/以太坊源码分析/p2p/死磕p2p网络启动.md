@@ -544,6 +544,6 @@ d := common.PrettyDuration(mclock.Now() - pd.created)
 1. 开启p2p网络主要包括：设置本地节点，监听TCP连接以及设置节点发现
 2. 运行P2P网络之后主要包括：发起TCP连接并执行连接，以及相关的连接处理。
 
-## 参考
 
-> https://github.com/blockchainGuide/   很全面的区块链开源学习资源
+
+

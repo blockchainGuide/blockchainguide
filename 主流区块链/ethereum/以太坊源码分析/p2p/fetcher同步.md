@@ -52,11 +52,11 @@ func (pm *ProtocolManager) BroadcastBlock(block *types.Block, propagate bool) {
 
 在 `Fetcher` 内部对区块进行同步时，会被分成如下几个阶段，并且每个阶段都有一个状态字段与之对应，用来记录这个阶段的数据：
 
-- ==Fetcher.announced==:此阶段代表节点宣称产生了新的区块（这个新产生的区块不一定是自己产生的，也可能是同步了其它节点新产生的区块），`Fetcher` 对象将相关信息放到 `Fetcher.announced` 中，等待下载。
-- ==Fetcher.fetching==：此阶段代表之前「announced」的区块正在被下载。
-- ==Fetcher.fetched==：代表区块的 `header` 已下载成功，现在等待下载 `body`。
-- ==Fetcher.completing==：代表 `body` 已经发起了下载，正在等待 body 下载成功。
-- ==Fetcher.queued==:代表 `body` 已经下载成功。因此一个区块的数据：`header` 和 body 都已下载完成，此区块正在等待写入本地数据库。
+- `Fetcher.announced`:此阶段代表节点宣称产生了新的区块（这个新产生的区块不一定是自己产生的，也可能是同步了其它节点新产生的区块），`Fetcher` 对象将相关信息放到 `Fetcher.announced` 中，等待下载。
+- `Fetcher.fetching`：此阶段代表之前「announced」的区块正在被下载。
+- `Fetcher.fetched`：代表区块的 `header` 已下载成功，现在等待下载 `body`。
+- `Fetcher.completing`：代表 `body` 已经发起了下载，正在等待 `body` 下载成功。
+- `Fetcher.queued`:代表 `body` 已经下载成功。因此一个区块的数据：`header` 和 body 都已下载完成，此区块正在等待写入本地数据库。
 
 ## Fetcher 同步区块哈希
 
@@ -480,7 +480,7 @@ for _, block := range blocks {
 
 最后用一张粗略的图来大概的描述一下整个同步区块哈希的流程：
 
-![image-20201202100215147](https://tva1.sinaimg.cn/large/0081Kckwgy1gl9a6umz2kj311i0u0gpx.jpg)
+![image-20201203090304059](https://tva1.sinaimg.cn/large/0081Kckwgy1glae3zccpdj30wm0t6q67.jpg)
 
 ----------
 
@@ -634,13 +634,13 @@ go f.broadcastBlock(block, false)
 
 真正做区块入库的是f.insertChain，这里会调用blockchain模块去操作，具体细节会后续文章讲述，到此为止Fether模块的同步就到此结束了，下面是同步区块的流程图：
 
-![image-20201202124917421](https://tva1.sinaimg.cn/large/0081Kckwgy1gl9f0nrllgj30ys0t2q84.jpg)
+![image-20201203090327173](https://tva1.sinaimg.cn/large/0081Kckwgy1glae40anr7j30ps0mkn0t.jpg)
 
 -------
 
 ## 参考
 
-> https://mindcarver.cn ☆☆☆☆☆
+> https://mindcarver.cn 
 >
 > https://github.com/blockchainGuide
 

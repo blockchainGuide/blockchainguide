@@ -208,19 +208,3 @@ u 首先把 w 插入自己适当的 K 桶中，然后对自己的节点 ID 执�
 
 -------
 
-## 参考
-
-> https://github.com/blockchainGuide   ☆☆☆☆☆
->
-> https://mindcarver.cn/   ☆☆☆☆☆
->
-> https://blog.csdn.net/qq_25870633/article/details/81939101
->
-> [http://www.ic.unicamp.br/~bit/ensino/mo809_1s13/papers/P2P/Kademlia-%20A%20Peer-to-Peer%20Information%20System%20Based%20on%20the%20XOR%20Metric%20.pdf](http://www.ic.unicamp.br/~bit/ensino/mo809_1s13/papers/P2P/Kademlia- A Peer-to-Peer Information System Based on the XOR Metric .pdf)
->
-> https://blog.csdn.net/hoping/article/details/5307320 
->
-> https://www.jianshu.com/p/f2c31e632f1d
->
-> https://www.ic.unicamp.br/~bit/ensino/mo809_1s13/papers/P2P/Kademlia-%20A%20Peer-to-Peer%20Information%20System%20Based%20on%20the%20XOR%20Metric%20.pdf
-
