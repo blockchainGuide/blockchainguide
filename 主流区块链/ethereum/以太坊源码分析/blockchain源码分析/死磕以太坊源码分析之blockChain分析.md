@@ -1,15 +1,17 @@
-
+> 死磕以太坊源码分析之blockChain分析
+>
+> 配合以下代码进行阅读：https://github.com/blockchainGuide/
 
 ## blockchain关键元素
 
-- db：持久化到底层数据储存，即leveldb；
-- genesisBlock：创始区块
-- currentBlock：当前区块，blockchain中并不是储存链所有的block，而是通过currentBlock向前回溯直到genesisBlock，这样就构成了区块链
-- bodyCache、bodyRLPCache、blockCache、futureBlocks：区块链中的缓存结构，用于加快区块链的读取和构建；
-- hc：headerchain区块头链，由blockchain额外维护的另一条链，由于Header和Block的储存空间是有很大差别的，但同时Block的Hash值就是Header（RLP）的Hash值，所以维护一个headerchain可以用于快速延长链，验证通过后再下载blockchain，或者可以与blockchain进行相互验证；
-- processor：执行区块链交易的接口，收到一个新的区块时，要对区块中的所有交易执行一遍，一方面是验证，一方面是更新世界状态；
-- validator：验证数据有效性的接口
-- futureBlocks：收到的区块时间大于当前头区块时间15s而小于30s的区块，可作为当前节点待处理的区块。
+- `db`：持久化到底层数据储存，即`leveldb`；
+- `genesisBlock`：创始区块
+- `currentBlock`：当前区块，`blockchain`中并不是储存链所有的`block`，而是通过`currentBlock`向前回溯直到`genesisBlock`，这样就构成了区块链
+- `bodyCache`、`bodyRLPCache`、`blockCache`、`futureBlocks`：区块链中的缓存结构，用于加快区块链的读取和构建；
+- `hc`：`headerchain`区块头链，由`blockchain`额外维护的另一条链，由于`Header`和`Block`的储存空间是有很大差别的，但同时`Block`的`Hash`值就是`Header`（RLP）的`Hash`值，所以维护一个`headerchain`可以用于快速延长链，验证通过后再下载`blockchain`，或者可以与`blockchain`进行相互验证；
+- `processor`：执行区块链交易的接口，收到一个新的区块时，要对区块中的所有交易执行一遍，一方面是验证，一方面是更新世界状态；
+- `validator`：验证数据有效性的接口
+- `futureBlocks`：收到的区块时间大于当前头区块时间15s而小于30s的区块，可作为当前节点待处理的区块。
 
 ----
 
@@ -271,16 +273,16 @@ go bc.update()
 
 总的来说做了以下几件事：
 
-1. 配置cacheConfig，创建各种lru缓存
-2. 初始化triegc
-3. 初始化stateDb：state.NewDatabase(db)
-4. 初始化区块和状态验证：NewBlockValidator()
-5. 初始化状态处理器：NewStateProcessor()
-6. 初始化区块头部链：NewHeaderChain()
-7. 查找创世区块：bc.genesisBlock = bc.GetBlockByNumber(0)
-8. 加载最新的状态数据：bc.loadLastState()
+1. 配置`cacheConfig`，创建各种lru缓存
+2. 初始化`triegc`
+3. 初始化`stateDb`：**state.NewDatabase(db)**
+4. 初始化区块和状态验证：**NewBlockValidator()**
+5. 初始化状态处理器：**NewStateProcessor()**
+6. 初始化区块头部链：**NewHeaderChain()**
+7. 查找创世区块：**bc.genesisBlock = bc.GetBlockByNumber(0)**
+8. 加载最新的状态数据：**bc.loadLastState()**
 9. 检查区块哈希的当前状态，并确保链中没有任何坏块
-10. go bc.update() 定时处理future block
+10. `go bc.update()` 定时处理`future block`
 
 ## 加载区块链状态
 
@@ -332,7 +334,17 @@ bc.currentFastBlock.Store(currentBlock)
 
 ①：如果链正在中断，直接返回
 
+```GO
+if atomic.LoadInt32(&bc.procInterrupt) == 1 {
+		return 0, nil
+	}
+```
+
 ②：开启并行的签名恢复
+
+```GO
+	senderCacher.recoverFromBlocks(types.MakeSigner(bc.chainConfig, chain[0].Number()), chain)
+```
 
 ③：校验header
 
@@ -361,6 +373,10 @@ block, err := it.next()
 
 如果block存在，且是已知块，则写入已知块。 
 
+```go
+bc.writeKnownBlock(block)
+```
+
 如果是祖先块的状态无法获取的错误，则作为侧链插入：
 
 ```go
@@ -383,7 +399,45 @@ bc.reportBlock(block, nil, err)
 
 ⑤：没有校验错误
 
-如果是坏块，则报告；如果是未知块，则写入未知块；根据给定trie，创建state；
+如果是坏块，则报告；
+
+```go
+if BadHashes[block.Hash()] {
+			bc.reportBlock(block, nil, ErrBlacklistedHash)
+			return it.index, ErrBlacklistedHash
+		}
+```
+
+如果是未知块，则写入未知块；
+
+```go
+if err == ErrKnownBlock {
+			logger := log.Debug
+			if bc.chainConfig.Clique == nil {
+				logger = log.Warn
+			}
+			logger("Inserted known block", "number", block.Number(), "hash", block.Hash(),
+				"uncles", len(block.Uncles()), "txs", len(block.Transactions()), "gas", block.GasUsed(),
+				"root", block.Root())
+
+			if err := bc.writeKnownBlock(block); err != nil {
+				return it.index, err
+			}
+			stats.processed++
+			lastCanon = block
+			continue
+		}
+```
+
+根据给定trie，创建state；
+
+```go
+parent := it.previous()
+		if parent == nil {
+			parent = bc.GetHeader(block.ParentHash(), block.NumberU64()-1)
+		}
+		statedb, err := state.New(parent.Root, bc.stateCache)
+```
 
 执行块中的交易：
 
@@ -419,23 +473,258 @@ bc.addFutureBlock(block)
 
 -----
 
-## 将块和关联状态写入到数据库
+### 执行块中交易
+
+在我们将区块上链，有一个关键步骤就是执行区块交易：
+
+```go
+receipts, logs, usedGas, err := bc.processor.Process(block, statedb, bc.vmConfig)
+```
+
+进入函数，具体分析：
+
+①：准备要用的字段，循环执行交易
+
+关键函数：`ApplyTransaction`,根据此函数返回收据。
+
+1.1 将交易结构转成`Message`结构
+
+```go
+msg, err := tx.AsMessage(types.MakeSigner(config, header.Number))
+```
+
+1.2 创建要在EVM环境中使用的新上下文
+
+```go
+context := NewEVMContext(msg, header, bc, author)
+```
+
+1.3 创建一个新环境，其中包含有关事务和调用机制的所有相关信息。
+
+```GO
+vmenv := vm.NewEVM(context, statedb, config, cfg)
+```
+
+1.4 将交易应用到当前状态(包含在env中)
+
+```go
+_, gas, failed, err := ApplyMessage(vmenv, msg, gp)
+```
+
+这部分代码继续跟进：
+
+```go
+func ApplyMessage(evm *vm.EVM, msg Message, gp *GasPool) ([]byte, uint64, bool, error) {
+	return NewStateTransition(evm, msg, gp).TransitionDb()
+}
+```
+
+`NewStateTransition` 是一个状态转换对象，`TransitionDb()` 负责转换交易状态，继续跟进：
+先进行`preCheck`，用来校验`nonce`是否正确
+
+```go
+st.preCheck()
+
+if st.msg.CheckNonce() {
+		nonce := st.state.GetNonce(st.msg.From())
+		if nonce < st.msg.Nonce() {
+			return ErrNonceTooHigh
+		} else if nonce > st.msg.Nonce() {
+			return ErrNonceTooLow
+		}
+	}
+```
+
+计算所需`gas`：
+
+```go
+gas, err := IntrinsicGas(st.data, contractCreation, homestead, istanbul)
+```
+
+扣除`gas`：
+
+```go
+if err = st.useGas(gas); err != nil {
+		return nil, 0, false, err
+	}
+```
+
+```go
+func (st *StateTransition) useGas(amount uint64) error {
+	if st.gas < amount {
+		return vm.ErrOutOfGas
+	}
+	st.gas -= amount
+	return nil
+}
+```
+
+如果是合约交易,则新建一个合约
+
+```go
+ret, _, st.gas, vmerr = evm.Create(sender, st.data, st.gas, st.value)
+```
+
+如果不是合约交易，则增加`nonce`
+
+```go
+st.state.SetNonce(msg.From(), st.state.GetNonce(sender.Address())+1)
+ret, st.gas, vmerr = evm.Call(sender, st.to(), st.data, st.gas, st.value)
+```
+
+重点关注`evm.call`方法：
+
+*检查账户是否有足够的气体进行转账*
+
+```go
+if !evm.Context.CanTransfer(evm.StateDB, caller.Address(), value) {
+		return nil, gas, ErrInsufficientBalance
+	}
+```
+
+*如果stateDb不存在此账户，则新建账户*
+
+```go
+if !evm.StateDB.Exist(addr) {
+  evm.StateDB.CreateAccount(addr)
+}
+```
+
+*执行转账操作*
+
+```go
+evm.Transfer(evm.StateDB, caller.Address(), to.Address(), value)
+```
+
+*创建合约*
+
+```go
+contract := NewContract(caller, to, value, gas)
+```
+
+*执行合约*
+
+```go
+ret, err = run(evm, contract, input, false)
+```
+
+添加余额
+
+```go
+	st.state.AddBalance(st.evm.Coinbase, new(big.Int).Mul(new(big.Int).SetUint64(st.gasUsed()), st.gasPrice))
+```
+
+回到`ApplyTransaction`
+
+1.5 调用`IntermediateRoot`计算状态`trie`的当前根哈希值。
+
+最终确定所有肮脏的存储状态，并把它们写进`trie`
+
+```go
+s.Finalise(deleteEmptyObjects)
+```
+
+将trie根设置为当前的根哈希并将给定的`object`写入到`trie`中
+
+```go
+obj.updateRoot(s.db)
+s.updateStateObject(obj)
+```
+
+1.6 创建收据
+
+```go
+receipt := types.NewReceipt(root, failed, *usedGas)
+	receipt.TxHash = tx.Hash()
+	receipt.GasUsed = gas
+	// if the transaction created a contract, store the creation address in the receipt.
+	if msg.To() == nil {
+		receipt.ContractAddress = crypto.CreateAddress(vmenv.Context.Origin, tx.Nonce())
+	}
+	// Set the receipt logs and create a bloom for filtering
+	receipt.Logs = statedb.GetLogs(tx.Hash())
+	receipt.Bloom = types.CreateBloom(types.Receipts{receipt})
+	receipt.BlockHash = statedb.BlockHash()
+	receipt.BlockNumber = header.Number
+	receipt.TransactionIndex = uint(statedb.TxIndex())
+```
+
+②：最后完成区块，应用任何共识引擎特定的额外功能(例如区块奖励)
+
+```go
+p.engine.Finalize(p.bc, header, statedb, block.Transactions(), block.Uncles())
+```
+
+```go
+func (ethash *Ethash) Finalize(chain consensus.ChainReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
+	// Accumulate any block and uncle rewards and commit the final state root
+	//累积任何块和叔叔的奖励并提交最终状态树根
+	accumulateRewards(chain.Config(), state, header, uncles)
+	header.Root = state.IntermediateRoot(chain.Config().IsEIP158(header.Number))
+}
+```
+
+到此为止`bc.processor.Process`执行完毕，返回`receipts`.
+
+------
+
+### 校验状态
+
+大致包括4部分的校验：
+
+①：校验使用的`gas`是否相等
+
+```go
+if block.GasUsed() != usedGas {
+		return fmt.Errorf("invalid gas used (remote: %d local: %d)", block.GasUsed(), usedGas)
+	}
+```
+
+②：校验bloom是否相等
+
+```go
+rbloom := types.CreateBloom(receipts)
+	if rbloom != header.Bloom {
+		return fmt.Errorf("invalid bloom (remote: %x  local: %x)", header.Bloom, rbloom)
+	}
+```
+
+③：校验收据哈希是否相等
+
+```go
+receiptSha := types.DeriveSha(receipts)
+	if receiptSha != header.ReceiptHash {
+		return fmt.Errorf("invalid receipt root hash (remote: %x local: %x)", header.ReceiptHash, receiptSha)
+	}
+```
+
+④：校验merkleroot 是否相等
+
+```go
+if root := statedb.IntermediateRoot(v.config.IsEIP158(header.Number)); header.Root != root {
+		return fmt.Errorf("invalid merkle root (remote: %x local: %x)", header.Root, root)
+	}
+```
+
+-----
+
+### 将块和关联状态写入到数据库
 
 函数：**WriteBlockWithState**
 
-①：计算父块的total td 
+①：计算块的`total td` 
 
 ```go
 ptd := bc.GetTd(block.ParentHash(), block.NumberU64()-1)
 ```
 
-②：添加待插入块本身的td ,并将此时最新的total td 存储到数据库中。
+②：添加待插入块本身的`td` ,并将此时最新的`total td` 存储到数据库中。
 
 ```GO
 bc.hc.WriteTd(block.Hash(), block.NumberU64(), externTd)
 ```
 
-③：将块的header和body分别序列化到数据库
+③：将块的`header`和`body`分别序列化到数据库
 
 ```go
 rawdb.WriteBlock(bc.db, block)
@@ -443,19 +732,25 @@ rawdb.WriteBlock(bc.db, block)
 	->WriteHeader(db, block.Header())
 ```
 
-④：将状态写入底层内存Trie数据库
+④：将状态写入底层内存`Trie`数据库
 
 ```go
 state.Commit(bc.chainConfig.IsEIP158(block.Number()))
 ```
 
-⑤：存储一个块的所有交易数据
+⑤：遍历节点数据写入到磁盘
+
+```go
+triedb.Commit(header.Root, true)
+```
+
+⑥：存储一个块的所有交易数据
 
 ```go
 rawdb.WriteReceipts(batch, block.Hash(), block.NumberU64(), receipts)
 ```
 
-⑥：将新的head块注入到当前链中
+⑦：将新的head块注入到当前链中
 
 ```go
 if status == CanonStatTy {
@@ -468,14 +763,38 @@ if status == CanonStatTy {
 - 存储最新的快
 - 更新currentFastBlock
 
+⑧：发送`chainEvent`事件或者`ChainSideEvent`事件或者`ChainHeadEvent`事件
+
+```go
+if status == CanonStatTy {
+		bc.chainFeed.Send(ChainEvent{Block: block, Hash: block.Hash(), Logs: logs})
+		if len(logs) > 0 {
+			bc.logsFeed.Send(logs)
+    }
+		if emitHeadEvent {
+			bc.chainHeadFeed.Send(ChainHeadEvent{Block: block})
+		}
+	} else {
+		bc.chainSideFeed.Send(ChainSideEvent{Block: block})
+	}
+```
+
 到此writeBlockWithState 结束，从上面可以知道，insertChain的最终还是调用了writeBlockWithState的insert方法完成了最终的插入动作。
+
+最后整个insertChain *函数，如果已经完成了插入，就发送chain head事件*
+
+```go
+	defer func() {
+		if lastCanon != nil && bc.CurrentBlock().Hash() == lastCanon.Hash() {
+			bc.chainHeadFeed.Send(ChainHeadEvent{lastCanon})
+		}
+	}()
+```
+
+
 
 ----
 
-## 思考
+## 参考
 
-1. 为什么还要导入已知块？？？writeKnownBlock
-
-参考：
-
-> https://github.com/mindcarver/blockchain_guide  (优秀的区块链学习营地)
+> https://mindcarver.cn
