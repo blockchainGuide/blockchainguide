@@ -46,6 +46,7 @@
 - [深入浅出以太坊MPT (Merkle Patricia Tree)](http://blog.csdn.net/qq_33935254/article/details/55505472)
 - [Merkle Patricia Tree (MPT) 以太坊merkle技术分析](http://blog.csdn.net/zslomo/article/details/53434883?t=1498537389197)
 - [Merkle Patricia Tree (MPT) 详解](http://www.cnblogs.com/fengzhiwu/p/5584809.html)
+- 以太坊黄皮书中文版：https://github.com/wanshan1024/ethereum_yellowpaper/blob/master/ethereum_yellow_paper_cn.pdf 
 
 ### 智能合约
 
