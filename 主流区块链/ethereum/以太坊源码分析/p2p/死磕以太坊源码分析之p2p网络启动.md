@@ -1,4 +1,8 @@
 > 死磕以太坊源码分析之p2p网络启动
+>
+> 相关代码:https://github.com/blockchainGuide/
+>
+> 持续输出区块链相关技术文章，喜欢作者可以持续关注，文章有问题，可以随时指出。
 
 ## p2p源码目录
 
@@ -53,7 +57,7 @@ discover/          基于UDP的节点发现V4协议
 
 ①：创建devp2p握手
 
-```GO
+```go
 pubkey := crypto.FromECDSAPub(&srv.PrivateKey.PublicKey)
 	srv.ourHandshake = &protoHandshake{Version: baseProtocolVersion, Name: srv.Name, ID: pubkey[1:]}
 	for _, p := range srv.Protocols {
@@ -66,7 +70,7 @@ sort.Sort(capsByNameAndVersion(srv.ourHandshake.Caps))
 
 ②：创建本地节点
 
-```GO
+```go
 db, err := enode.OpenDB(srv.Config.NodeDatabase)
 	if err != nil {
 		return err
@@ -94,7 +98,7 @@ db, err := enode.OpenDB(srv.Config.NodeDatabase)
 
 ②：如果配置了NAT，则更新本地节点记录并映射TCP监听端口
 
-```GO
+```go
 if tcp, ok := listener.Addr().(*net.TCPAddr); ok {
 		srv.localnode.Set(enr.TCP(tcp.Port))
 		if !tcp.IP.IsLoopback() && srv.NAT != nil {
@@ -109,7 +113,7 @@ if tcp, ok := listener.Addr().(*net.TCPAddr); ok {
 
 ③：开启P2P监听，接收`inbound`连接
 
-```GO
+```go
 srv.listenLoop()
 ```
 
@@ -127,7 +131,7 @@ srv.listenLoop()
 
 - 获取监听的连接的地址并检查这个连接
 
-  ```GO
+  ```go
   remoteIP := netutil.AddrIP(fd.RemoteAddr())
   if err := srv.checkInboundConn(fd, remoteIP); err != nil {
     .....
@@ -141,7 +145,7 @@ srv.listenLoop()
 
 - 最后真正建立连接
 
-  ```GO
+  ```go
   go func() {
   			srv.SetupConn(fd, inboundConn, nil)// 连接建立过程（将连接添加为peer）
   			slots <- struct{}{}
@@ -150,7 +154,7 @@ srv.listenLoop()
 
   要注意setupConn的第三个字段传入的是nil，表示还没有拨号，如果正在拨号的话需要节点公钥。
 
-  ```GO
+  ```go
   var dialPubkey *ecdsa.PublicKey
   	if dialDest != nil {
   		dialPubkey = new(ecdsa.PublicKey)
@@ -168,7 +172,7 @@ srv.listenLoop()
 
   如果dialDest 不为nil，检查公钥是否匹配，如果为nil,就从连接中返回一个node出来
 
-  ```GO
+  ```go
   if dialDest != nil {
   		// For dialed connections, check that the remote public key matches.
   		//对于拨号连接，请检查远程公钥是否匹配
@@ -183,7 +187,7 @@ srv.listenLoop()
 
   接下来就是真正执行握手了 ,这部分也属于RLPX，跳过
 
-  ```GO
+  ```go
   phs, err := c.doProtoHandshake(srv.ourHandshake)
   ```
 
@@ -199,7 +203,7 @@ srv.listenLoop()
 
 ①：添加特定于协议的发现源
 
-```GO
+```go
 added := make(map[string]bool)
 	for _, proto := range srv.Protocols {
 		if proto.DialCandidates != nil && !added[proto.Name] {
@@ -243,7 +247,7 @@ s := &dialstate{
 
 ②：加入初始引导节点
 
-```GO
+```go
 	copy(s.bootnodes, cfg.BootstrapNodes)
 	if s.log == nil {
 		s.log = log.Root()
@@ -252,7 +256,7 @@ s := &dialstate{
 
 ③： 加入静态节点
 
-```GO
+```go
 for _, n := range cfg.StaticNodes {
 		s.addStatic(n)
 	}
@@ -276,7 +280,7 @@ for _, n := range cfg.StaticNodes {
 
 #### 发起TCP连接任务
 
-```GO
+```go
 scheduleTasks()
 ```
 
@@ -308,7 +312,7 @@ for id, t := range s.static {
 
 ②：计算所需的动态拨号数
 
-```GO
+```go
 needDynDials := s.maxDynDials
 	for _, p := range peers {
 		if p.rw.is(dynDialedConn) {
@@ -328,7 +332,7 @@ needDynDials := s.maxDynDials
 
 不过这个一般适用在**测试网或者私链**。
 
-```GO
+```go
 if len(peers) == 0 && len(s.bootnodes) > 0 && needDynDials > 0 && now.Sub(s.start) > fallbackInterval {
 		bootnode := s.bootnodes[0]
 		s.bootnodes = append(s.bootnodes[:0], s.bootnodes[1:]...)
@@ -359,7 +363,7 @@ if len(s.lookupBuf) < needDynDials && !s.lookupRunning {
 
 ⑤：没有需要执行的任务，保持拨号逻辑继续运行
 
-```GO
+```go
 if nRunning == 0 && len(newtasks) == 0 && s.hist.Len() > 0 {
 		t := &waitExpireTask{s.hist.nextExpiry().Sub(now)}
 		newtasks = append(newtasks, t)
@@ -443,7 +447,7 @@ func (t *dialTask) dial(srv *Server, dest *enode.Node) error {
 
 ①：停止p2p服务
 
-```GO
+```go
 case <-srv.quit:
 break running
 ```
@@ -539,11 +543,13 @@ d := common.PrettyDuration(mclock.Now() - pd.created)
 
 -----
 
-## 总结
+## 总结&参考
 
 1. 开启p2p网络主要包括：设置本地节点，监听TCP连接以及设置节点发现
 2. 运行P2P网络之后主要包括：发起TCP连接并执行连接，以及相关的连接处理。
 
 
 
-
+> https://mindcarver.cn/
+>
+> https://github.com/blockchainGuide/
