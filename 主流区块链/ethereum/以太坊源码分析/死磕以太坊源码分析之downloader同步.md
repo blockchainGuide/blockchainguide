@@ -1,6 +1,6 @@
 > 死磕以太坊源码分析之downloader同步
 >
-> **需要配合注释代码看**：https://github.com/blockchainGuide/
+> **需要配合注释代码看**：https://github.com/blockchainGuide/ 给个star哦
 >
 > *这篇文章篇幅较长，能看下去的是条汉子，建议收藏*
 >

@@ -1,4 +1,6 @@
 > 死磕以太坊源码分析之Fetcher同步
+>
+> https://github.com/blockchainGuide (文章资料在此，给个Star哦)
 
 ## Fetcher 功能概述
 

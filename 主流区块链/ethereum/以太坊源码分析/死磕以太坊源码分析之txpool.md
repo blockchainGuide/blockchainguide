@@ -1,19 +1,21 @@
-> 死磕以太坊源码分析之交易缓冲池
+> 死磕以太坊源码分析之txpool
 >
-> 结合以下代码阅读:https://github.com/blockchainGuide/
+> 请结合以下代码阅读:https://github.com/blockchainGuide/
+>
+> 写文章不易，也希望大家多多指出问题，交个朋友，混个圈子哦
 
 
 ## 交易池概念原理
 
 交易池工作概况：
 
-<img src="https://tva1.sinaimg.cn/large/007S8ZIlgy1gjnz8kgakqj30ya0togqg.jpg" alt="image-20201013202559291" style="zoom:50%;" />
+![image-20201225104748102](https://tva1.sinaimg.cn/large/0081Kckwgy1glzwre4v4ej31120tcgpa.jpg)
 
 1. 交易池的数据来源主要来自：
-   - 本地提交，也就是第三方应用通过调用本地以太坊节点的RPC服务所提交的交易；
+   - 本地提交，也就是第三方应用通过调用本地以太坊节点的`RPC`服务所提交的交易；
    - 远程同步，是指通过广播同步的形式，将其他以太坊节点的交易数据同步至本地节点;
 2. 交易池中交易去向：被Miner模块获取并验证，用于挖矿；挖矿成功后写进区块并被广播
-3. Miner取走交易是复制，交易池中的交易并不减少。直到交易被写进规范链后才从交易池删除；
+3. `Miner`取走交易是复制，交易池中的交易并不减少。直到交易被写进规范链后才从交易池删除；
 4. 交易如果被写进分叉，交易池中的交易也不减少，等待重新打包。
 
 ## 关键数据结构
@@ -99,7 +101,7 @@ type TxPool struct {
 
 ## txpool初始化
 
-Txpool初始化主要做了以下几件事：
+`Txpool`初始化主要做了以下几件事：
 
 ①：检查配置  配置有问题则用默认值填充
 
@@ -121,7 +123,7 @@ Txpool初始化主要做了以下几件事：
    pool.locals.add(addr)
 ```
 
-   我们在安装以太坊客户端往往可以指定一个数据存储目录，此目录便会存储着所有我们导入的或者通过本地客户端创建的帐户keystore文件。而这个加载过程便是从该目录加载帐户数据
+   我们在安装以太坊客户端可以指定一个数据存储目录，此目录便会存储着所有我们导入的或者通过本地客户端创建的帐户`keystore`文件。而这个加载过程便是从该目录加载帐户数据
 
 ④：更新交易池
 
@@ -135,7 +137,7 @@ Txpool初始化主要做了以下几件事：
    pool.priced = newTxPricedList(pool.all)
 ```
 
-   通过排序，优先处理gasprice越高的交易。
+   通过排序，优先处理`gasprice`越高的交易。
 
 ⑥：如果本地交易开启 那么从本地磁盘加载本地交易
 
@@ -174,7 +176,9 @@ Txpool初始化主要做了以下几件事：
 
 ## 添加交易到txpool
 
-之前我们说过交易池中交易的来源一方面是其他节点广播过来的，一方面是本地提交的，追根到源代码一个是`AddLocal`，一个是`AddRemote`,不管哪个都会调用`addTxs`。我们对添加交易的讨论就会从这个函数开始，它主要做了以下几件事：
+之前我们说过交易池中交易的来源一方面是其他节点广播过来的，一方面是本地提交的，追根到源代码一个是`AddLocal`，一个是`AddRemote`,不管哪个都会调用`addTxs`。我们对添加交易的讨论就会从这个函数开始，它主要做了以下几件事,先用一张简图说明一下：
+
+![image-20201225104721173](https://tva1.sinaimg.cn/large/0081Kckwgy1glzxhi23euj31ak0u0h34.jpg)
 
 1. 过滤池中已经存在的交易
 
@@ -197,7 +201,7 @@ Txpool初始化主要做了以下几件事：
    replaced, err := pool.add(tx, local)
    ```
 
-   进入到 pool.add函数中，这个add函数相当重要，它是将交易添加到queue中，等待后面的promote，到pending中去。如果在queue或者pending中已经存在，并且它的gas price更高时，将覆盖之前的交易。下面来拆开的分析一下add 这个函数。
+   进入到 `pool.add`函数中，这个`add`函数相当重要，它是将交易添加到`queue`中，等待后面的promote，到`pending`中去。如果在`queue`或者`pending`中已经存在，并且它的gas price更高时，将覆盖之前的交易。下面来拆开的分析一下add 这个函数。
 
    ①：看交易是否收到过，如果已经收到过就丢弃
 
@@ -238,12 +242,13 @@ Txpool初始化主要做了以下几件事：
    	}
    ```
    
-   注意这边的GlobalSlots和GlobalQueue ，就是我们说的pending和queue的最大容量，如果交易池的交易数超过两者之和，就要丢弃价格过低的交易。
+   注意这边的`GlobalSlots`和`GlobalQueue` ，就是我们说的`pending`和`queue`的最大容量，如果交易池的交易数超过两者之和，就要丢弃价格过低的交易。
    
    
    
-④：判断当前交易在pending队列中是否存在nonce值相同的交易。存在则判断当前交易所设置的gasprice是否超过设置的PriceBump百分比，超过则替换覆盖已存在的交易，否则报错返回`替换交易gasprice过低`，并且把它扔到queue队列中(enqueueTx)。
-   
+
+④：判断当前交易在pending队列中是否存在`nonce`值相同的交易。存在则判断当前交易所设置的`gasprice`是否超过设置的`PriceBump`百分比，超过则替换覆盖已存在的交易，否则报错返回`替换交易gasprice过低`，并且把它扔到`queue`队列中`(enqueueTx)`。
+
 ```go
    if list := pool.pending[from]; list != nil && list.Overlaps(tx) {
 		// Nonce already pending, check if required price bump is met
@@ -267,13 +272,13 @@ Txpool初始化主要做了以下几件事：
    	}
    	// New transaction isn't replacing a pending one, push into queue
    	replaced, err = pool.enqueueTx(hash, tx)
-   ```
-   
-   添加交易的流程就到此为止了。接下来就是如何把queue（暂时不可执行）中添加的交易扔到pending（可执行交易）中，速成promote。
-   
+```
+
+   添加交易的流程就到此为止了。接下来就是如何把`queue`（暂时不可执行）中添加的交易扔到`pending`（可执行交易）中，速成`promote`。
+
 3. 提升交易
 
-   提升交易主要把交易从queue扔到pending中，我们在接下来的里面重点讲
+   提升交易主要把交易从`queue`扔到`pending`中，我们在接下来的里面重点讲
 
    ```go
    done := pool.requestPromoteExecutables(dirtyAddrs)
@@ -281,9 +286,11 @@ Txpool初始化主要做了以下几件事：
 
 ## 交易升级
 
-promoteExecutables将future queue中的交易移动到pending中，同时也会删除很多无效交易比如nonce低或者余额低等等，主要分以下步骤：
+`promoteExecutables`将`future queue`中的交易移动到`pending`中，同时也会删除很多无效交易比如`nonce`低或者余额低等等，主要分以下步骤：先看张图：
 
-①：将所有queue中nonce低于账户当前nonce的交易从all里面删除
+![image-20201225104612253](https://tva1.sinaimg.cn/large/0081Kckwgy1glzxix54vaj313m0si4d2.jpg)
+
+①：将所有`queue`中`nonce`低于账户当前`nonce`的交易从`all`里面删除
 
 ```go
 forwards := list.Forward(pool.currentState.GetNonce(addr))
@@ -294,7 +301,7 @@ forwards := list.Forward(pool.currentState.GetNonce(addr))
 		}
 ```
 
-②：将所有queue中花费大于账户余额 或者gas大于限制的交易从all里面删除
+②：将所有`queue`中花费大于账户余额 或者`gas`大于限制的交易从all里面删除
 
 ```go
 drops, _ := list.Filter(pool.currentState.GetBalance(addr), pool.currentMaxGas)
@@ -305,9 +312,9 @@ drops, _ := list.Filter(pool.currentState.GetBalance(addr), pool.currentMaxGas)
 		}
 ```
 
-③：将所有可执行的交易从queue里面移到pending里面（proteTx）
+③：将所有可执行的交易从`queue`里面移到`pending`里面（`proteTx`）
 
-注：可执行交易：将pending里面nonce值大于等于账户当前状态nonce的且nonce连续的几笔交易作为准备好的交易
+注：可执行交易：将`pending`里面`nonce`值大于等于账户当前状态`nonce`的，且`nonce`连续的几笔交易作为准备好的交易
 
 ```go
 readies := list.Ready(pool.pendingNonces.get(addr))
@@ -320,7 +327,7 @@ readies := list.Ready(pool.pendingNonces.get(addr))
 		}
 ```
 
-重点就是 **promoteTx**的处理，这个方法与add的不同之处在于，add是获得到的**新交易插入pending**，而promoteTx是将**queue列表中的Txs放入pending**接下来我们先看看里面是如何来处理的：
+重点就是 **promoteTx**的处理，这个方法与add的不同之处在于，`addTx`是获得到的**新交易插入pending**，而`promoteTx`是将**queue列表中的Txs放入pending**接下来我们先看看里面是如何来处理的：
 
 ```go
 inserted, old := list.Add(tx, pool.config.PriceBump)
@@ -341,20 +348,19 @@ inserted, old := list.Add(tx, pool.config.PriceBump)
 
 		pendingReplaceMeter.Mark(1)
 	} else {
-		// Nothing was replaced, bump the pending counter
-		pendingGauge.Inc(1)
+	...
 	}
 ```
 
 主要就做了这几件事：
 
-1. 将交易插入pending中，如果待插入的交易nonce在pending列表中存在，那么待插入的交易gas price大于或等于原交易价值的110%（跟pricebump设定有关）时，替换原交易
-2. 如果新交易替换了某个交易，从all列表中删除老交易
-3. 最后更新一下all列表
+1. 将交易插入`pending`中，如果待插入的交易`nonce`在`pending`列表中存在，那么待插入的交易`gas price`大于或等于原交易价值的`110%（`跟`pricebump`设定有关）时，替换原交易
+2. 如果新交易替换了某个交易，从`all`列表中删除老交易
+3. 最后更新一下`all`列表
 
-经过proteTx之后，要扔到pending的交易都放在了promoted []*types.Transaction中，再回到promoteExecutables中，继续下面步骤：
+经过`proteTx`之后，要扔到`pending`的交易都放在了`promoted []*types.Transaction`中，再回到`promoteExecutables`中，继续下面步骤：
 
-④：如果非本地账户queue大于限制（AccountQueue），从最后取出nonce较大的交易进行remove
+④：如果非本地账户`queue`大于限制（`AccountQueue`），从最后取出`nonce`较大的交易进行`remove`
 
 ```GO
 if !pool.locals.contains(addr) {
@@ -382,19 +388,19 @@ if list.Empty() {
 
 交易降级的几个场景：
 
-1. 出现了新的区块，将会从pending中移除出现在区块中的交易到queue中
-2. 或者是另外一笔交易（gas price 更高）,则会从pending中移除到queue中
+1. 出现了新的区块，将会从`pending`中移除出现在区块中的交易到`queue`中
+2. 或者是另外一笔交易（`gas price` 更高）,则会从`pending`中移除到`queue`中
 
 关键函数：demoteUnexecutables，主要做的事情如下：
 
-①：遍历pending中所有地址对应的交易列表
+①：遍历`pending`中所有地址对应的交易列表
 
 ```go
 for addr, list := range pool.pending {
   ...}
 ```
 
-②：删除所有认为过旧的交易（low nonce）
+②：删除所有认为过旧的交易（`low nonce`）
 
 ```go
 olds := list.Forward(nonce)
@@ -405,7 +411,7 @@ olds := list.Forward(nonce)
 		}
 ```
 
-③：删除所有费用过高的交易（余额低或用尽），并将所有无效者送到queue中以备后用
+③：删除所有费用过高的交易（余额低或用尽），并将所有无效者送到`queue`中以备后用
 
 ```go
 drops, invalids := list.Filter(pool.currentState.GetBalance(addr), pool.currentMaxGas)
@@ -424,7 +430,7 @@ drops, invalids := list.Filter(pool.currentState.GetBalance(addr), pool.currentM
 		}
 ```
 
-④：如果交易前面有间隙，将后面的交易移到queue中
+④：如果交易前面有间隙，将后面的交易移到`queue`中
 
 ```go
 if list.Len() > 0 && list.txs.Get(nonce) == nil {
@@ -438,9 +444,9 @@ if list.Len() > 0 && list.txs.Get(nonce) == nil {
 		}
 ```
 
-注：间隙的出现通常是因为交易余额问题导致的。假如原规范链A 上交易m花费10，分叉后该账户又在分叉链B发出一个交易m花费20，这就导致该账户余额本来可以支付A链上的某笔交易，但在B链上可能就不够了。这个余额不足的交易在B如果是n+3，那么在A链上n+2，n+4号交易之间就出现了空隙，这就导致从n+3开始往后所有的交易都要降级；
+注：间隙的出现通常是因为交易余额问题导致的。假如原规范链 A 上交易m花费10，分叉后该账户又在分叉链B发出一个交易m花费20，这就导致该账户余额本来可以支付A链上的某笔交易，但在B链上可能就不够了。这个余额不足的交易在B如果是n+3，那么在A链上n+2，n+4号交易之间就出现了空隙，这就导致从n+3开始往后所有的交易都要降级；
 
-到底交易降级结束。
+到此为止交易降级结束。
 
 -----
 
@@ -450,17 +456,93 @@ if list.Len() > 0 && list.txs.Get(nonce) == nil {
 
 **重置交易池**将检索区块链的当前状态（主要由于更新导致链状态变化），并确保交易池的内容对于链状态而言是有效的。
 
+`reset`的调用时机如下：
+
+1. `TxPool`初始化的过程：`NewTxPool`；
+2. `TxPool`事件监听`go`程收到规范链更新事件
+
 流程图如下：
 
 ![image-20201015185551752](https://tva1.sinaimg.cn/large/007S8ZIlgy1gjq7vc6bz8j31260sodlq.jpg)
 
 根据上面流程图，主要功能是由于规范链的更新，重新整理交易池：
 
-1. 找到由于规范链更新而作废的交易
-2. 给交易池设置最新的世界状态
-3. 把旧链退回的交易重新放入交易池
+①：*如果老区块头不为空 且老区块头不是新区块的父区块，说明新老区块不在一条链上*
 
+```go
+if oldHead != nil && oldHead.Hash() != newHead.ParentHash {}
+```
 
+②：*如果新头区块和旧头区块相差大于64，则所有交易不必回退到交易池*
+
+```go
+if depth := uint64(math.Abs(float64(oldNum) - float64(newNum))); depth > 64 {
+  log.Debug("Skipping deep transaction reorg", "depth", depth)
+}
+```
+
+③：*如果旧链的头区块大于新链的头区块高度，旧链向后退并回收所有回退的交易*
+
+```go
+for rem.NumberU64() > add.NumberU64() {
+				discarded = append(discarded, rem.Transactions()...)
+				if rem = pool.chain.GetBlock(rem.ParentHash(), rem.NumberU64()-1); rem == nil {
+					log.Error("Unrooted old chain seen by tx pool", "block", oldHead.Number, "hash", oldHead.Hash())
+					return
+				}
+			}
+```
+
+④：*如果新链的头区块大于旧链的头区块，新链后退并回收交易*
+
+```go
+for add.NumberU64() > rem.NumberU64() {
+				included = append(included, add.Transactions()...)
+				if add = pool.chain.GetBlock(add.ParentHash(), add.NumberU64()-1); add == nil {
+					log.Error("Unrooted new chain seen by tx pool", "block", newHead.Number, "hash", newHead.Hash())
+					return
+				}
+			}
+```
+
+⑤：*当新旧链到达同一高度的时候同时回退，知道找到共同的父节点*
+
+```go
+for rem.Hash() != add.Hash() {
+				discarded = append(discarded, rem.Transactions()...)
+				if rem = pool.chain.GetBlock(rem.ParentHash(), rem.NumberU64()-1); rem == nil {
+					log.Error("Unrooted old chain seen by tx pool", "block", oldHead.Number, "hash", oldHead.Hash())
+					return
+				}
+				included = append(included, add.Transactions()...)
+				if add = pool.chain.GetBlock(add.ParentHash(), add.NumberU64()-1); add == nil {
+					log.Error("Unrooted new chain seen by tx pool", "block", newHead.Number, "hash", newHead.Hash())
+					return
+				}
+			} 
+```
+
+⑥：*给交易池设置最新的世界状态*
+
+```go
+statedb, err := pool.chain.StateAt(newHead.Root)
+	if err != nil {
+		log.Error("Failed to reset txpool state", "err", err)
+		return
+	}
+	pool.currentState = statedb
+	pool.pendingNonces = newTxNoncer(statedb)
+	pool.currentMaxGas = newHead.GasLimit
+```
+
+⑦：*把旧链回退的交易放入交易池*
+
+```go
+senderCacher.recover(pool.signer, reinject)
+pool.addTxsLocked(reinject, false)
+```
+
+到此整个`reset`的流程就结束了。
 
 -----
 
@@ -473,3 +555,4 @@ if list.Len() > 0 && list.txs.Get(nonce) == nil {
 > https://learnblockchain.cn/2019/06/03/eth-txpool/#%E6%B8%85%E7%90%86%E4%BA%A4%E6%98%93%E6%B1%A0
 >
 > https://blog.csdn.net/lj900911/article/details/84825739
+
