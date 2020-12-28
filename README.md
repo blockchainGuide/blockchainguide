@@ -9,7 +9,7 @@
 
 
 
-## 欢迎来撩 
+ **欢迎来撩** 
 
 > 资料获取：关注微信公众号
 >
@@ -24,9 +24,9 @@
 | QQ交流群     | 聚集众多的区块链技术爱好者 | 1057497867             |
 | 公众号       | 区块链技术栈               | 区块链技术栈           |
 | 个人博客网站 | 纯技术分享，最新更新       | https://mindcarver.cn/ |
-| 联系我       | 求职或者招人               | Mindcarver             |
+| 联系我       | 求职或者招人               | mindcarver             |
 
-## 入门书籍
+**入门书籍**
 
 > 作为区块链从业人员必须要阅读大量有关于区块链相关技术栈的书籍，不能单单局限于以太坊，自从业以来，边工作边学习，从互联网上收集了一堆有助于更好学习区块链的书籍，关注微信号：区块链技术栈，免费领取。
 
@@ -34,7 +34,7 @@
 
 ------
 
-## 就业视频
+**就业视频**
 
 > 对于刚入门的小白或者已经工作了一段时间的想要提升的区块链从业人员都可以学习，资料免费领取，关注公众号：区块链技术栈
 
@@ -164,6 +164,51 @@
 
 ------
 
+## 区块链探索
+
+### 零知识证明
+
+- [阿里巴巴的零知识证明](http://songshuhui.net/archives/36968)
+
+### 跨链技术
+
+#### 侧链/中继(sidechains/relays)
+
+- [区块链的跨链技术介绍完整版](http://blog.csdn.net/elwingao/article/details/53410750)
+- [比原链设计思考：侧链存在的价值](http://www.8btc.com/bytom-sidechain)
+- [谈一谈：侧链、驱动链和Rootstock双向挂钩设计](http://www.8btc.com/sidechains-drivechains-and-rsk-2-way-peg-design)
+- [侧链白皮书：用楔入式侧链实现区块链的创新](http://www.8btc.com/enabling-blockchain-innovations-with-pegged-sidechains-abstract-introduction)
+- [比特币闪电网络白皮书：可扩展的off-chain 即时支付（中文）](http://view.xiaomiquan.com/view/59a3e22d2540ed222c6075b8)
+- [详解最近大热的闪电网络、雷电网络和CORDA](http://www.8btc.com/ln-rn-corda)
+- [根链（Rootstock）是什么？](http://www.8btc.com/tan90d88)
+- [根链平台(RootStock)——基于比特币驱动的智能合约白皮书](http://www.8btc.com/tan90d84)
+- [BTC-Relay与RootStock侧链技术对比](http://www.8btc.com/btc-relay-and-rootstock)
+- [BTC Relay](http://btcrelay.org/) - (Ethereum侧链: 跨链 -> Bitcoin)
+
+#### 公证人机制(notary schemes)
+#### 哈希锁定(Hash-locking)
+#### 分布式私钥控制方案
+
+
+
+### 去中心化存储
+
+#### [IPFS](https://ipfs.io/)
+
+- [白皮书·中文](https://gguoss.github.io/2017/05/28/ipfs/)
+- [白皮书·英文](https://github.com/ipfs/papers/raw/master/ipfs-cap2pfs/ipfs-p2p-file-system.pdf)
+
+#### [Filecoin](http://filecoin.io/)
+
+- [白皮书·中文](http://chainx.org/paper/index/index/id/13.html)
+- [白皮书·英文](https://filecoin.io/filecoin.pdf)
+
+#### [BigchainDB](https://www.bigchaindb.com/)
+
+- [白皮书·中文](http://blog.csdn.net/fengqing79/article/details/70154076)
+- [白皮书·英文](https://www.bigchaindb.com/whitepaper/)
+
+-------
 ## 其他主流币
 
 ### [EOS](https://eos.io/) - [github](https://github.com/eosio)
@@ -189,59 +234,6 @@
 
 --------
 
-## 区块链探索
-
-### 零知识证明
-
-- [阿里巴巴的零知识证明](http://songshuhui.net/archives/36968)
-
-### 跨链技术(侧链)
-
-- [区块链的跨链技术介绍完整版](http://blog.csdn.net/elwingao/article/details/53410750)
-- [比原链设计思考：侧链存在的价值](http://www.8btc.com/bytom-sidechain)
-- [谈一谈：侧链、驱动链和Rootstock双向挂钩设计](http://www.8btc.com/sidechains-drivechains-and-rsk-2-way-peg-design)
-
-#### [Sidechains](https://blockstream.com/technology/) - (Bitcoin侧链: 楔入式侧链 - Pegged Sidechains, 闪电网络 - Lightning Network)
-
-- [侧链白皮书：用楔入式侧链实现区块链的创新](http://www.8btc.com/enabling-blockchain-innovations-with-pegged-sidechains-abstract-introduction)
-
-- [比特币闪电网络白皮书：可扩展的off-chain 即时支付（中文）](http://view.xiaomiquan.com/view/59a3e22d2540ed222c6075b8)
-- [详解最近大热的闪电网络、雷电网络和CORDA](http://www.8btc.com/ln-rn-corda)
-
-#### [Rootstock - RSK(根链)](http://www.rsk.co/) - (Bitcoin侧链: 智能合约)
-
-- [根链（Rootstock）是什么？](http://www.8btc.com/tan90d88)
-- [根链平台(RootStock)——基于比特币驱动的智能合约白皮书](http://www.8btc.com/tan90d84)
-- [BTC-Relay与RootStock侧链技术对比](http://www.8btc.com/btc-relay-and-rootstock)
-
-#### [BTC Relay](http://btcrelay.org/) - (Ethereum侧链: 跨链 -> Bitcoin)
-
-### 去中心化存储
-
-#### [IPFS](https://ipfs.io/)
-
-- [白皮书·中文](https://gguoss.github.io/2017/05/28/ipfs/)
-- [白皮书·英文](https://github.com/ipfs/papers/raw/master/ipfs-cap2pfs/ipfs-p2p-file-system.pdf)
-
-#### [Filecoin](http://filecoin.io/)
-
-- [白皮书·中文](http://chainx.org/paper/index/index/id/13.html)
-- [白皮书·英文](https://filecoin.io/filecoin.pdf)
-
-#### [BigchainDB](https://www.bigchaindb.com/)
-
-- [白皮书·中文](http://blog.csdn.net/fengqing79/article/details/70154076)
-- [白皮书·英文](https://www.bigchaindb.com/whitepaper/)
-
-### 炒币
-
-> 炒币群请加个人微信号
-
-- [梦一直跑，我开始追](http://www.8btc.com/dream-on)
-- [二代币是”富二代”还是”穷二代”？](http://www.8btc.com/edb)
-- [给新手：区块链资产的分类与价值判断](https://zhuanlan.zhihu.com/p/27415529)
-
--------
 
 
 
