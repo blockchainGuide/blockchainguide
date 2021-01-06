@@ -1,6 +1,6 @@
 > 死磕以太坊源码分析之p2p网络启动
 >
-> 相关代码:https://github.com/blockchainGuide/
+> 资料代码及文章:https://github.com/blockchainGuide/
 >
 > 持续输出区块链相关技术文章，喜欢作者可以持续关注，文章有问题，可以随时指出。
 
@@ -550,6 +550,8 @@ d := common.PrettyDuration(mclock.Now() - pd.created)
 
 
 
+> 公众号：区块链技术栈     
+>
 > https://mindcarver.cn/
 >
 > https://github.com/blockchainGuide/

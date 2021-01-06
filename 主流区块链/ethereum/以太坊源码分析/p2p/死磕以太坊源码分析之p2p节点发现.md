@@ -2,7 +2,7 @@
 
 > 死磕以太坊源码分析之p2p节点发现
 
-在阅读节点发现源码之前必须要理解kadmilia算法，[可以参考：KAD算法详解](https://github.com/blockchainGuide/blockchainguide/blob/main/%E4%B8%BB%E6%B5%81%E5%8C%BA%E5%9D%97%E9%93%BE/ethereum/%E4%BB%A5%E5%A4%AA%E5%9D%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/p2p/KAD%E7%AE%97%E6%B3%95.md)。
+在阅读节点发现源码之前必须要理解kadmilia算法，[可以参考：KAD算法详解](https://github.com/blockchainGuide/)。
 
 ## 节点发现概述
 
