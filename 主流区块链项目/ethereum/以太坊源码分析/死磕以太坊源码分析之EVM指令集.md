@@ -6,6 +6,8 @@
 >
 > 以下指令集持续更新，最新文章请参考上面
 
+![f4a720afd869d70c3d1d2149980ba0e9](https://tva1.sinaimg.cn/large/008eGmZEgy1gn1z0rqeqaj31c00u0k20.jpg)
+
 ## EVM 指令集概念
 
 **EVM执行的是字节码**。由于操作码被限制在一个字节以内，所以EVM指令集最多只能容纳**256**条指令。目前EVM已经定义了`100`多条指令，还有**100**多条指令可供以后扩展。**这100多条指令包括算术运算指令，比较操作指令，按位运算指令，密码学计算指令，栈、memory、storage操作指令，跳转指令，区块、智能合约相关指令等**。
@@ -191,7 +193,6 @@ SHA3: "SHA3"
 >
 > https://github.com/blockchainGuide
 >
-> https://www.jianshu.com/nb/9496943 （levelDB源码）
 
 
 
