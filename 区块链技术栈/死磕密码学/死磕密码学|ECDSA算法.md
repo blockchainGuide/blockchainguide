@@ -1,6 +1,8 @@
 > 死磕密码学|ECDSA算法
 > 文章资料代码请star https://github.com/blockchainGuide/
 
+![u=1020757406,2710278676&fm=26&gp=0](https://tva1.sinaimg.cn/large/008eGmZEgy1gn80yxj5d7j30et08cjrr.jpg)
+
 ## 生成签名
 
  假设 Alice 希望对消息$m$进行签名，所采用的椭圆曲线参数为$D=(p,a,b,G,n,h)$，对应的密钥对为$(k,Q)$，其中为公钥$Q$，$k$为私钥。

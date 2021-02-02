@@ -496,10 +496,6 @@ for addr := range s.stateObjectsDirty {
 
 ![image-20210113111013494](https://tva1.sinaimg.cn/large/008eGmZEgy1gmlw6izetsj31ha0oogom.jpg)
 
-
-
-如果觉得文章还可以，关注下https://github.com/blockchainGuide此项目哦，欢迎有想法的人一起维护。
-
 ## 参考
 
 > https://mindcarver.cn

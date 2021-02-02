@@ -193,12 +193,36 @@
 
 ### 去中心化存储
 
-#### [IPFS](https://ipfs.io/)
+#### IPFS
+
+IPFS社区：https://ipfser.org/
+
+
+
+#### FileCoin
+
+官网地址：https://filecoin.io/zh-cn/
+
+File底层技术规范及原理：https://spec.filecoin.io/
+
+filecoin的改进方案及研究路线：
+
+- https://research.protocol.ai/groups/cryptolab/
+
+- https://protocol.ai/
+
+filecoin开发文档：https://docs.filecoin.io/
+
+
 
 - [白皮书·中文](https://gguoss.github.io/2017/05/28/ipfs/)
 - [白皮书·英文](https://github.com/ipfs/papers/raw/master/ipfs-cap2pfs/ipfs-p2p-file-system.pdf)
 
-#### [Filecoin](http://filecoin.io/)
+####  FileCoin
+
+
+
+[Filecoin](http://filecoin.io/)
 
 - [白皮书·中文](http://chainx.org/paper/index/index/id/13.html)
 - [白皮书·英文](https://filecoin.io/filecoin.pdf)

@@ -46,10 +46,6 @@ contract C {
 
 我创建了一个可以调用`setA(1)`的交易，可以在地址[0x7db471e5…](https://rinkeby.etherscan.io/tx/0x7db471e5792bbf38dc784a5b983ee6a7bbe3f1db85dd4daede9ee88ed88057a5)上查看该交易。
 
-![image-20210113192327349](https://tva1.sinaimg.cn/large/008eGmZEgy1gmmag4h8uuj31iw0qi4el.jpg)
-
-
-
 交易的输出数据是：
 
 >0xee919d500000000000000000000000000000000000000000000000000000000000000001
