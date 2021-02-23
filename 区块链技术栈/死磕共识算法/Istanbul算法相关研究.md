@@ -1,7 +1,3 @@
-> 文章以及资料（开源）：[github地址](https://github.com/mindcarver/blockchain_guide)  
-
-[TOC]
-
 ### Terminology：
 
 - **Validator**：块的验证者
