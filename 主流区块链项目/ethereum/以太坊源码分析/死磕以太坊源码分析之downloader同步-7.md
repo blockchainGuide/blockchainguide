@@ -651,6 +651,8 @@ for _, header := range request.Headers {
 
 ## 同步headers
 
+继续回到`syncWithPeer`函数中，来讲下面比较关键的几个点。
+
 ### fetchHeaders
 
 同步`headers` 是是由函数`fetchHeaders`来完成的。

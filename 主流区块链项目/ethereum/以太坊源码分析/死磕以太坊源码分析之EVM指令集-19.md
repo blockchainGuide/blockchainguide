@@ -1,4 +1,4 @@
-> 死磕以太坊源码分析之EVM指令集.md
+> 死磕以太坊源码分析之EVM指令集
 >
 > 配合以下代码进行阅读：https://github.com/blockchainGuide/
 >

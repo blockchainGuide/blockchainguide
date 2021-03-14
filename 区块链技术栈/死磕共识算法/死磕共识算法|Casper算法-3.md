@@ -20,8 +20,15 @@
 >
 >  https://eth.wiki/en/concepts/proof-of-stake-faqs
 >
->  https://www.cnblogs.com/sueyyyy/articles/9726812.html
->
 >  https://blog.csdn.net/yangwei256/article/details/83188458
 >
 >  https://ethfans.org/posts/ethereum-casper-101
+
+
+
+
+
+
+
+
+

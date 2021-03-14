@@ -1,4 +1,20 @@
-### Terminology：
+> 死磕共识算法|Istanbul BFT算法
+>
+> 配合以下代码进行阅读：https://github.com/blockchainGuide/
+>
+> 写文不易，上面给个star，有什么问题可以指出，便于大家交流学习。
+
+![931c0c9307f4692d69da24b7fe6e0bf3](https://tva1.sinaimg.cn/large/008eGmZEgy1gnximfy066j30oo0gs0vk.jpg)
+
+
+
+# 引言
+
+[Istanbul BFT](https://github.com/ethereum/EIPs/issues/650)作为BFT类算法的一种已经有过在以太坊上的实践。虽然Istanbul目前还存在一些[潜在的问题](https://blog.csdn.net/dianyangshu0904/article/details/102195413#潜在问题)，但其算法思想和实现还是值得学习和借鉴的。
+
+> 源代码：https://github.com/jpmorganchase/quorum/tree/master/consensus/istanbul
+
+# 术语
 
 - **Validator**：块的验证者
 - **Proposer**：块验证者中被选择用来出块的
@@ -10,9 +26,9 @@
 - **Consensus proof**：用来证明块已经通过共识处理的块签名
 - **Snapshot**：上一个时期的验证者投票状态
 
-### Consensus
+### IBFT共识细节
 
-Proposer 必须在每个 round中连续不断的为consensus 生成 block prorosal。
+Proposer 必须在每个 round中连续不断的 生成 block prorosal。
 
 istanbul BFT 包括 3 个阶段的共识：PRE-PREPARE，PREPARE，COMMIT。
 
@@ -20,15 +36,15 @@ istanbul BFT 包括 3 个阶段的共识：PRE-PREPARE，PREPARE，COMMIT。
 
 在每轮之前将会以循环的方式选择一个 validator 作为 proposer. 接着 proposer将会提出一个新的 block proposal 并且广播通过 pre-prepare 消息。一旦接受到 pre-prepare消息 ，validators将会进入到 pre-prepared 阶段并且广播 prepare  消息。这个步骤是为了确保 validators 运行在相同的 sequence 和相同的 round 中。当接收到2F+1 的Prepare消息时，validators 进入到 prepared并且广播 commit 消息。此步骤是通知其它节点接受建议的块并将块插入链。 最后，validator等待2F + 1 COMMIT消息进入COMMITTED状态，然后将块插入链。
 
-注意：Istanbul中 的块是最终的，没有分叉，任何有效的块必须位于主链的某个位置。
+注意：**Istanbul中 的块是最终的，没有分叉，任何有效的块必须位于主链的某个位置**。
 
 为了防止故障节点从主链生成完全不同的链，每个验证器将2F + 1个接收到的COMMIT签名附加到标头中的extraData字段，然后将其插入链中， 因此，块是可自我验证的，并且也可以支持轻客户端。但是，动态extraData会导致块哈希计算出现问题。由于来自不同验证器的相同块可以具有不同的COMMIT签名集，因此同一块也可以具有不同的块散列。 为了解决这个问题，我们通过排除COMMIT签名部分来计算块哈希。 因此，我们仍然可以保持块/块哈希一致性，并将共识证明放在块头中。
 
-#### Consensus states
+#### 共识状态
 
 Istanbul BFT是一种状态机复制算法。 每个验证器都维护一个状态机副本，以达到块一致性。
 
-States:
+一共有以下几种状态：
 
 - `NEW ROUND`: Proposer发送新的 block proposal。 Validator等待PRE-PREPARE消息。
 - `PRE-PREPARED`:验证器已收到PRE-PREPARE消息并广播PREPARE消息。 然后它等待2F + 1 个PREFARE或COMMIT消息。
@@ -37,7 +53,7 @@ States:
 - `FINAL COMMITTED`:新块已成功插入区块链，validator 已准备好进入下一轮。
 - `ROUND CHANGE`:验证器正在等待同一个建议的轮数上的2F + 1个ROUND CHANGE消息。
 
-#### State transitions
+#### 状态转换
 
 ![image-20190819094215511](http://ww1.sinaimg.cn/large/006tNc79gy1g64qqy79jqj30z60najwf.jpg)
 
@@ -45,14 +61,14 @@ States:
   - **Proposer** 从txpool 中收集交易
   - **Proposer**生成块提议并将其广播给验证者。 然后它进入PRE-PREPARED状态。
   - 每个validator在收到具有以下条件的PRE-PREPARE消息后进入PRE-PREPARED：
-    - 块提案来自有效的提案人。
+    - 块提案来自有效的proposer。
     - 块头有效
-    - 块提议的sequence和round匹配validator的状态
+    - block proposal的sequence和round匹配validator的状态
   - **Validator**广播`PREPARE`消息给其他validators
 - `PRE-PREPARED` -> `PREPARED`:
   - Validator接收2F + 1个有效的PREPARE消息以进入PREPARED状态。 有效消息符合以下条件：
-    - 匹配 sequence 和 round
-    - 匹配block hash
+    - sequence 和 round匹配
+    - block hash匹配
     - 消息来自于已知 validators
 - `COMMITTED` -> `FINAL COMMITTED`:
   - validator 将 2F+1 个提交的签名放到 extraData中并且尝试将区块上链
@@ -73,16 +89,16 @@ States:
 - 在相同的建议round number上接收到2F + 1个ROUND CHANGE消息后，验证器退出round change loop，计算新的提议者，然后进入NEW ROUND状态。
 - 验证器跳出round change loop的另一个条件是它通过对等同步接收验证的块。
 
-#### Proposer selection
+#### Proposer 选择策略
 
 目前我们支持两种策略：**round robin** 和 **sticky proposer**.。
 
 - Round robin:在循环设置中，提议者将在每个块和round change中进行更改
 - Sticky proposer: 在 sticky proposer中, proposal只有在发生一轮变更时才会改变。
 
-#### Validator list voting
+#### Validator 列表投票
 
-我们使用与Clique类似的验证器投票机制，并复制Clique EIP的大部分内容。 每个epoch交易都会重置验证器投票，这意味着如果授权或取消授权投票仍在进行中，则投票过程将被终止。
+使用与Clique类似的验证器投票机制，并复制Clique EIP的大部分内容。 每个epoch交易都会重置验证器投票，这意味着如果授权或取消授权投票仍在进行中，则投票过程将被终止。
 
 对于所有交易块：
 
@@ -93,15 +109,15 @@ States:
 - 无效的提案不会因客户端实现简单而受到惩罚。
 - 一项生效的提案需要放弃该提案的所有未决投票（赞成和反对），并以 clean state 开始
 
-#### Future message and backlog
+#### 未来的消息和backlog
 
 在异步网络环境中，可以接收将来无法在当前状态下处理的消息。 例如，验证器可以在NEW ROUND上接收COMMIT消息。 我们将此类消息称为“未来消息”。 当验证程序收到将来的消息时，它会将消息放入其待办事项中，并尽可能在稍后尝试处理。
 
-#### Optimization
+#### 优化
 
 为了加速共识过程，在接收PREFARE消息的2F + 1之前接收到2F + 1 COMMIT消息的验证器将跳转到COMMITTED状态，这样就不必等待进一步的PREPARE消息。
 
-#### Constants
+#### 常量
 
 我们定义以下常量：
 
@@ -130,7 +146,7 @@ States:
 - `VALIDATOR_LIMIT`: 传递授权或取消授权提议的验证者数量。
   - 必须是最低限额（N / 2）+ 1才能对链条达成多数共识。
 
-#### Block header
+#### 块头
 
 我们没有为伊斯坦布尔BFT发明新的块头。 相反，我们跟随Clique重新调整ethash标头字段，如下所示：
 
@@ -180,7 +196,7 @@ States:
 
 计算仍然类似于ethash块哈希计算，但我们需要处理extraData。 我们按如下方式计算字段：
 
-##### Proposer seal calculation
+##### 计算提议者seal
 
 在提议者密封计算时，committed的密封仍然是未知的，因此我们计算密封与那些未知的密封空。 计算如下：
 
@@ -189,14 +205,14 @@ States:
 - `Header`: 和ethash 的header一样，只不过extradata不一样
 - `extraData`: `vanity | RLP(IstanbulExtra)`, 在IstanbulExtra`, `CommittedSeal`and `Seal` 是空数组.
 
-##### Block hash calculation
+##### 计算块哈希
 
 在计算块哈希时，我们需要排除已提交的密封，因为该数据在不同的验证器之间是动态的。 因此，我们在计算哈希时使CommittedSeal为空数组。 计算如下：
 
 - `Header`: 和ethash 的header一样，只不过extradata不一样
 - `extraData`: `vanity | RLP(IstanbulExtra)`, 在IstanbulExtra`, `CommittedSeal`and `Seal` 是空数组.
 
-##### Consensus proof
+##### 共识证明
 
 在将块插入区块链之前，每个验证器需要从其他验证器收集2F + 1个已提交的密封以构成共识证明。 一旦它收到足够的提交密封，它将填充IstanbulExtra中的CommittedSeal，重新计算extraData，然后将块插入区块链。 请注意，由于已提交的密封可能因不同的来源而不同，因此我们会在计算块哈希时排除该部分，如上一节所述。
 
@@ -208,7 +224,7 @@ committed seal由每个签名哈希的验证器以及其私钥的COMMIT_MSG_CODE
 - `CONCAT(Hash, COMMIT_MSG_CODE)`: 连接 block hash and `COMMIT_MSG_CODE` bytes.
 - `PrivateKey`: 签署验证者的私钥。
 
-### Block locking mechanism
+### 块锁定机制
 
 引入锁定机制以解决安全问题。 通常，当提议者用块B锁定在某个高度H时，它只能为高度H提出B.另一方面，当验证器被锁定时，它只能在B上投票选择高度H.
 
@@ -262,7 +278,7 @@ committed seal由每个签名哈希的验证器以及其私钥的COMMIT_MSG_CODE
     - 情况1，在B上收到COMMIT：等待2F + 1 COMMIT消息。
     - 案例2，B'收到COMMIT：不应该发生。
 
-#### Locking cases
+#### 锁定情况下
 
 - Round change:
   - Case 1, `+2/3` are locked:
@@ -297,7 +313,24 @@ committed seal由每个签名哈希的验证器以及其私钥的COMMIT_MSG_CODE
     - 案例2.1，提议者被锁定：提议者提出B.
     - 案例2.2，提议者没有被锁定：提议者在H处建议B'。因为+2/3已经在H处有B，所以这一轮将导致轮次改变。
 
-### Gossip network
+# 存在的问题
+
+- [Fail-Stop failures](https://github.com/jpmorganchase/quorum/issues/305)
+- [这篇文章详细分析了IBFT](https://arxiv.org/pdf/1901.07160.pdf)
+- 没有激励机制
 
 传统上，验证者需要紧密连接才能达到稳定的共识结果，这意味着所有验证者需要彼此直接连接; 但是，在实际的网络环境中，很难实现稳定和恒定的p2p连接。 为了解决这个问题，伊斯坦布尔BFT实施了八卦网络来克服这种限制。 在八卦网络环境中，所有验证器只需要弱连接，这意味着当它们直接连接或者它们之间连接有一个或多个验证器时，任何两个验证器都会被连接。 共识消息将在验证器之间中继。
 
+------
+
+# 参考
+
+>  https://github.com/blockchainGuide （文章合集最终修订版，会因为文章内容勘误不断更新，建议关注）
+>
+>  https://arxiv.org/pdf/1901.07160.pdf （IBFT论文）
+>
+>  https://github.com/ethereum/EIPs/issues/650 
+>
+>  https://github.com/ConsenSys/quorum/issues/305 
+>
+>  https://docs.goquorum.consensys.net/en/stable/Concepts/Consensus/IBFT/ （quorum的官方的文档）

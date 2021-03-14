@@ -691,9 +691,9 @@ func (ethash *Ethash) verifyHeader(chain consensus.ChainReader, header, parent *
 
 ## 总结&参考
 
-> https://mindcarver.cn  ☆☆☆
+> https://github.com/blockchainGuide 
 >
-> https://github.com/blockchainGuide ☆☆☆
+> 公众号：区块链技术栈  （推荐哦）
 >
 > https://eth.wiki/concepts/ethash/design-rationale
 >
