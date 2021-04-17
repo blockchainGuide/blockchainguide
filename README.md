@@ -37,6 +37,7 @@
 
 - 巴比特
 - Ethfans
+- https://learnblockchain.cn/2019/11/08/zkp-info (登链社区)
 
 ## 以太坊
 
@@ -100,8 +101,6 @@
 
 ## 基础理论
 
-
-
 ### 共识机制
 
 - [共识算法（POW,POS,DPOS,PBFT）介绍和心得](http://blog.csdn.net/lsttoy/article/details/61624287)
@@ -109,21 +108,22 @@
 - [什么是区块链共识？](http://8btc.com/article-2238-1.html)
 - [区块链共识机制浅谈](http://blog.csdn.net/jeffrey__zhou/article/details/56672948)
 - [区块链共识机制有哪些？](https://www.zhihu.com/question/53385152)
-
 - [微信PaxosStore：深入浅出Paxos算法协议](http://www.infoq.com/cn/articles/wechat-paxosstore-paxos-algorithm-protocol)
 - [Raft 一致性算法论文译文](http://www.infoq.com/cn/articles/raft-paper)
-
 - [POS白皮书：基于权益证明的交易](https://yq.aliyun.com/articles/60400)
 - [深度解析POS和POW的区别](http://8btc.com/article-1882-1.html)
-
 - [DPOS——回归中本聪](http://www.8btc.com/dpos-back-to-satoshi)
 - [信息图：股份授权证明机制（DPOS）](http://www.8btc.com/dpossha)
 - [DPOS共识算法 -- 缺失的白皮书](https://steemit.com/dpos/@legendx/dpos)
 - [DPOS委托权益证明 vs POW工作量证明](https://zhuanlan.zhihu.com/p/28127511)
-
-- [相比POS和DPOS，POW更有利于区块链原生代币的价格稳定吗？](https://www.zhihu.com/question/49995385)
+- [相比POS和DPOS，POW更有利于区块链原生代币的价格稳定吗？
+- [](https://www.zhihu.com/question/49995385)
 
 ## 密码学
+
+### 零知证明
+
+> 参考[零知识证明资料](区块链技术栈/零知证明)
 
 ## 计算机网络
 
@@ -210,15 +210,6 @@ filecoin开发文档：https://docs.filecoin.io/
 
 - [白皮书·中文](https://gguoss.github.io/2017/05/28/ipfs/)
 - [白皮书·英文](https://github.com/ipfs/papers/raw/master/ipfs-cap2pfs/ipfs-p2p-file-system.pdf)
-
-####  FileCoin
-
-
-
-[Filecoin](http://filecoin.io/)
-
-- [白皮书·中文](http://chainx.org/paper/index/index/id/13.html)
-- [白皮书·英文](https://filecoin.io/filecoin.pdf)
 
 #### [BigchainDB](https://www.bigchaindb.com/)
 
