@@ -1,12 +1,11 @@
 
 
-## 个人提升计划清单
+## 计划
 
-> 1. 完善自己的知识理论体系，寻找区块链架构方面的一些经验心得
+> 1. 完善自己的知识理论体系
 > 2. 死磕密码学相关的系列文章
 > 3. 死磕前沿技术应用到区块链上的系列文章
 > 4. 死磕分布式存储相关理论
-> 5. go或者rust写出自己的一条公链（构思中）
 > 6. 联盟链以及智能合约的相关文章
 
 ## 学习交流
@@ -129,27 +128,13 @@
 
 > 参考[零知识证明资料](区块链技术栈/零知证明)
 
-## 计算机网络
-
 ## 区块链架构
 
 - [区块链底层架构概览：第一原则框架](http://ethfans.org/posts/blockchain-infrastructure-landscape-a-first-principles) - 推荐
 - [区块链主流开源技术体系介绍](http://www.8btc.com/elwingao-blockchain-6) - 推荐
 - [小蚁张铮文：写给CTO的主流区块链架构横向剖析](http://www.8btc.com/blockchain-architecture)
 
-## Dapps
-
-### [Steem](https://steem.io/) - 推荐(非常典型的区块链应用项目 - [steemit](https://steemit.com/)), [github](http://github.com/steemit)
-
-- [白皮书·中文](https://biweilai.com/tag/steem)
-- [白皮书·英文](https://steem.io/SteemWhitePaper.pdf)
-
-### [YOYOW](https://yoyow.org/) - 推荐(Steem的中文克隆)
-
-- [白皮书·中文](https://yoyow.org/files/white-paper2.pdf)
-- [一个基于区块链的UGC平台，他们想用“脑力挖矿”让作者得到合理的回报](http://www.jianshu.com/p/e044e51e06bb)
-
-- [谈谈区块链（15）：盘点以太坊十大应用](http://www.8btc.com/ethereum-top-10-app)
+- http://www.8btc.com/ethereum-top-10-app)
 
 --------
 
@@ -210,39 +195,8 @@ filecoin的改进方案及研究路线：
 
 filecoin开发文档：https://docs.filecoin.io/
 
-
-
 - [白皮书·中文](https://gguoss.github.io/2017/05/28/ipfs/)
 - [白皮书·英文](https://github.com/ipfs/papers/raw/master/ipfs-cap2pfs/ipfs-p2p-file-system.pdf)
-
-#### [BigchainDB](https://www.bigchaindb.com/)
-
-- [白皮书·中文](http://blog.csdn.net/fengqing79/article/details/70154076)
-- [白皮书·英文](https://www.bigchaindb.com/whitepaper/)
-
--------
-## 其他主流币
-
-### [EOS](https://eos.io/) - [github](https://github.com/eosio)
-
-- [EOS正式版技术白皮书（中文）](http://www.jianshu.com/p/f65bf7691482)
-- [解读《EOS.IO技术白皮书》](http://www.jianshu.com/p/bc489db794ce)
-
-- [深入浅出eos vs 以太坊](http://www.jianshu.com/p/1afec85afd3c)
-
-### [IOTA](https://iota.org/)
-
-- [白皮书·中文](http://www.iotachina.com/wp-content/uploads/2016/11/2016112902003453.pdf)
-- [白皮书·英文](https://iota.org/IOTA_Whitepaper.pdf)
-
-### [Byteball](https://byteball.org/) 
-
-- [白皮书·中文] [一](http://www.bitett.com/portal.php?mod=view&aid=438), [二](http://www.bitett.com/portal.php?mod=view&aid=453), [三](https://bitcointalk.org/index.php?topic=1840404)
-- [白皮书·英文](https://byteball.org/Byteball.pdf)
-
-### [EP-CHAIN 环净链](https://ep-chain.org/)
-
-- [白皮书·中文](https://ep-chain.org/download/EPC_v1.00.pdf)
 
 --------
 
