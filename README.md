@@ -1,13 +1,3 @@
-
-
-## 计划
-
-> 1. 完善自己的知识理论体系
-> 2. 死磕密码学相关的系列文章
-> 3. 死磕前沿技术应用到区块链上的系列文章
-> 4. 死磕分布式存储相关理论
-> 6. 联盟链以及智能合约的相关文章
-
 ## 学习交流
 
 > 资料获取关注公众号：区块链技术栈
@@ -50,6 +40,7 @@
 2. [以太坊网络状态](https://ethstats.net/)
 3. [以太坊黄皮书](https://ethereum.github.io/yellowpaper/paper.pdf)
 4. [全面介绍以太坊](https://medium.com/@preethikasireddy/how-does-ethereum-work-anyway-22d1df506369)
+5. [Ethereum Improvement Proposals](https://eips.ethereum.org/) ： 包含各种提升标准，常用的ERC20,ERC721
 
 ###  以太坊理论
 
@@ -140,15 +131,16 @@
 
 ## 区块链面试集锦
 
-
-
 ------
 
 ## 区块链探索
 
-### 零知识证明
+### 隐私计算
 
-- [阿里巴巴的零知识证明](http://songshuhui.net/archives/36968)
+- 安全多方计算
+- 同态加密
+- 零知识证明 
+  - [阿里巴巴的零知识证明](http://songshuhui.net/archives/36968)
 
 ### 跨链技术
 
@@ -200,7 +192,9 @@ filecoin开发文档：https://docs.filecoin.io/
 
 --------
 
+## 区块链如何解决一些问题
 
+- 如何保证上链数据是安全的 预言机
 
 
 
