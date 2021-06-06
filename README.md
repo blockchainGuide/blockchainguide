@@ -198,6 +198,36 @@ filecoin开发文档：https://docs.filecoin.io/
 
 
 
+## 去中心化应用
 
+### 去中心化金融：
 
+-  [MakerDAO初探](https://www.wanghaoyi.com/defi-maker-dao-basis.html)
+- [去中心化借贷Compound项目简介](https://www.wanghaoyi.com/defi-compound-profile.html)
+- [去中心化衍生品协议Synthetix](去中心化衍生品协议Synthetix) 
+- [去中心化资金管理TokenSets](去中心化资金管理TokenSets)
+- [去中心化彩票PoolTogether](去中心化彩票PoolTogether)
+- [去中心化支付与Sablier](https://www.wanghaoyi.com/defi-sablier-profile.html)
+- [去中心化交易所(DEX)之Uniswap](https://www.wanghaoyi.com/defi-dex-uniswap-profile.html)
+- [去中心化交易所(DEX)之dYdX](https://www.wanghaoyi.com/defi-dex-dydx-profile.html)
+- [去中心化保险Nexus Mutual](https://www.wanghaoyi.com/defi-insurance-profile.html)
 
+### 数据共享
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/datashare/
+
+### 可信存证
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/attestation/
+
+### 防伪溯源
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/traceability/
+
+### 传统金融场景
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/financial-app/
+
+### 通证经济
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/token/
