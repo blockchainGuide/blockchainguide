@@ -55,6 +55,12 @@
 
 ### 智能合约
 
+### EIP 
+
+> 中文版翻译 参考 https://github.com/blockchainGuide/EIP_CN.git
+>
+> 对ERC标准的翻译，以及一些类库的实现
+
 - [以太坊开发入门](http://me.tryblockchain.org/getting-up-to-speed-on-ethereum.html)
 - [Solidity 官方文档中文版](http://wiki.jikexueyuan.com/project/solidity-zh/)
 - [区块链技术-智能合约-以太坊（译文）](http://ethfans.org/posts/block-chain-technology-smart-contracts-and-ethereum) 
