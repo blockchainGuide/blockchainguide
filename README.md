@@ -40,7 +40,7 @@
 2. [以太坊网络状态](https://ethstats.net/)
 3. [以太坊黄皮书](https://ethereum.github.io/yellowpaper/paper.pdf)
 4. [全面介绍以太坊](https://medium.com/@preethikasireddy/how-does-ethereum-work-anyway-22d1df506369)
-5. [Ethereum Improvement Proposals](https://eips.ethereum.org/) ： 包含各种提升标准，常用的ERC20,ERC721
+5. [Ethereum Improvement Proposals](https://eips.ethereum.org/) 
 
 ###  以太坊理论
 
@@ -55,15 +55,52 @@
 
 ### 智能合约
 
-### EIP 
+#### solidity 学习
+
+- [以太坊开发入门](http://me.tryblockchain.org/getting-up-to-speed-on-ethereum.html)
+- [Solidity 官方文档中文版](http://wiki.jikexueyuan.com/project/solidity-zh/)
+- [区块链技术-智能合约-以太坊（译文）](http://ethfans.org/posts/block-chain-technology-smart-contracts-and-ethereum) 
+- [合约的最佳实践](https://github.com/ConsenSys/smart-contract-best-practices)
+
+#### ERC合约标准
 
 > 中文版翻译 参考 https://github.com/blockchainGuide/EIP_CN.git
 >
 > 对ERC标准的翻译，以及一些类库的实现
 
-- [以太坊开发入门](http://me.tryblockchain.org/getting-up-to-speed-on-ethereum.html)
-- [Solidity 官方文档中文版](http://wiki.jikexueyuan.com/project/solidity-zh/)
-- [区块链技术-智能合约-以太坊（译文）](http://ethfans.org/posts/block-chain-technology-smart-contracts-and-ethereum) 
+#### 合约升级
+
+#### 合约安全与审计
+
+#### 合约应用场景
+
+##### 金融
+
+-  [MakerDAO初探](https://www.wanghaoyi.com/defi-maker-dao-basis.html)
+-  [去中心化借贷Compound项目简介](https://www.wanghaoyi.com/defi-compound-profile.html)
+-  [去中心化衍生品协议Synthetix](去中心化衍生品协议Synthetix) 
+-  [去中心化资金管理TokenSets](去中心化资金管理TokenSets)
+-  [去中心化彩票PoolTogether](去中心化彩票PoolTogether)
+-  [去中心化支付与Sablier](https://www.wanghaoyi.com/defi-sablier-profile.html)
+-  [去中心化交易所(DEX)之Uniswap](https://www.wanghaoyi.com/defi-dex-uniswap-profile.html)
+-  [去中心化交易所(DEX)之dYdX](https://www.wanghaoyi.com/defi-dex-dydx-profile.html)
+-  [去中心化保险Nexus Mutual](https://www.wanghaoyi.com/defi-insurance-profile.html)
+
+##### 数据共享
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/datashare/
+
+##### 可信存证
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/attestation/
+
+##### 防伪溯源
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/traceability/
+
+##### 通证经济
+
+https://www.wanghaoyi.com/blockchain/blockchain-app/token/
 
 -------
 
@@ -79,23 +116,9 @@
 
 - [比特币白皮书：一种点对点的电子现金系统](http://www.8btc.com/wiki/bitcoin-a-peer-to-peer-electronic-cash-system)
 - [其实并没有什么比特币，只有 UTXO](http://8btc.com/article-4381-1.html)
-- [区块链核心技术演进之路－算法演进](http://www.8btc.com/blockchain-tech-algorithm) - 强烈推荐
-- [区块链核心技术演进之路－挖矿演进](http://www.8btc.com/blockchain-tech-mining) - 强烈推荐
-- [区块链核心技术演进之路-共识机制演进(1)](http://www.8btc.com/blockchain-tech-consensus-mechanism) - 强烈推荐
-
-### [Bitcoin Core - BTC](https://bitcoin.org/) - (Bitcoin - 交易性能: SegWit), [github](https://github.com/bitcoin/bitcoin)
-
-- [隔离见证学习笔记](http://www.8btc.com/tan90d34)
-- [通往SegWit的漫长之路：比特币最大的协议升级是如何成为现实的](http://www.8btc.com/segwit-0829) - 推荐(关于SegWit的前生今世)
-
-### [Bitcoin Cash - BCC](https://bitcoincash.org/) - (Bitcoin - 交易性能: 扩容8M), [github](https://github.com/Bitcoin-ABC/bitcoin-abc)
-
-- [如何看待新虚拟货币Bitcoin Cash（BCC）？](https://www.zhihu.com/question/63109943)
-
-### [Zcash - ZEC](https://z.cash/) - (Bitcoin - 隐私保护: 零知识证明), [github](https://github.com/zcash/zcash)
-
-- [给Zcash泼泼冷水-有了深黑，市场真的需要纯黑吗？](http://8btc.com/thread-41384-1-1.html) - 推荐
-- [不是程序员也能看懂的ZCash零知识证明](http://www.sohu.com/a/121847942_475384)
+- [区块链核心技术演进之路－算法演进](http://www.8btc.com/blockchain-tech-algorithm) 
+- [区块链核心技术演进之路－挖矿演进](http://www.8btc.com/blockchain-tech-mining) 
+- [区块链核心技术演进之路-共识机制演进(1)](http://www.8btc.com/blockchain-tech-consensus-mechanism) 
 
 -----
 
@@ -150,7 +173,7 @@
 
 ### 跨链技术
 
-#### 侧链/中继(sidechains/relays)
+#### 侧链/中继
 
 - [区块链的跨链技术介绍完整版](http://blog.csdn.net/elwingao/article/details/53410750)
 - [比原链设计思考：侧链存在的价值](http://www.8btc.com/bytom-sidechain)
@@ -161,10 +184,10 @@
 - [根链（Rootstock）是什么？](http://www.8btc.com/tan90d88)
 - [根链平台(RootStock)——基于比特币驱动的智能合约白皮书](http://www.8btc.com/tan90d84)
 - [BTC-Relay与RootStock侧链技术对比](http://www.8btc.com/btc-relay-and-rootstock)
-- [BTC Relay](http://btcrelay.org/) - (Ethereum侧链: 跨链 -> Bitcoin)
+- [BTC Relay](http://btcrelay.org/) 
 
-#### 公证人机制(notary schemes)
-#### 哈希锁定(Hash-locking)
+#### 公证人机制
+#### 哈希锁定
 #### 分布式私钥控制方案
 
 
@@ -201,39 +224,3 @@ filecoin开发文档：https://docs.filecoin.io/
 ## 区块链如何解决一些问题
 
 - 如何保证上链数据是安全的 预言机
-
-
-
-## 去中心化应用
-
-### 去中心化金融：
-
--  [MakerDAO初探](https://www.wanghaoyi.com/defi-maker-dao-basis.html)
-- [去中心化借贷Compound项目简介](https://www.wanghaoyi.com/defi-compound-profile.html)
-- [去中心化衍生品协议Synthetix](去中心化衍生品协议Synthetix) 
-- [去中心化资金管理TokenSets](去中心化资金管理TokenSets)
-- [去中心化彩票PoolTogether](去中心化彩票PoolTogether)
-- [去中心化支付与Sablier](https://www.wanghaoyi.com/defi-sablier-profile.html)
-- [去中心化交易所(DEX)之Uniswap](https://www.wanghaoyi.com/defi-dex-uniswap-profile.html)
-- [去中心化交易所(DEX)之dYdX](https://www.wanghaoyi.com/defi-dex-dydx-profile.html)
-- [去中心化保险Nexus Mutual](https://www.wanghaoyi.com/defi-insurance-profile.html)
-
-### 数据共享
-
-https://www.wanghaoyi.com/blockchain/blockchain-app/datashare/
-
-### 可信存证
-
-https://www.wanghaoyi.com/blockchain/blockchain-app/attestation/
-
-### 防伪溯源
-
-https://www.wanghaoyi.com/blockchain/blockchain-app/traceability/
-
-### 传统金融场景
-
-https://www.wanghaoyi.com/blockchain/blockchain-app/financial-app/
-
-### 通证经济
-
-https://www.wanghaoyi.com/blockchain/blockchain-app/token/
