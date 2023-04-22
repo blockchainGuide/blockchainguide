@@ -4,7 +4,7 @@
 >
 > 技术讨论群添加微信：mindcarver
 
-
+从2018年进入到区块链行业，将期间的一些学习包括未来学习的技术分享给大家，下面的有些内容都是索引到相关的库，如果有兴趣要贡献的可以联系我。
 
 **入门书籍以及入门视频**
 
@@ -61,6 +61,7 @@
 - [Solidity 官方文档中文版](http://wiki.jikexueyuan.com/project/solidity-zh/)
 - [区块链技术-智能合约-以太坊（译文）](http://ethfans.org/posts/block-chain-technology-smart-contracts-and-ethereum) 
 - [合约的最佳实践](https://github.com/ConsenSys/smart-contract-best-practices)
+- https://learnblockchain.cn/manuals (各类中文文档)
 
 #### ERC合约标准
 
@@ -146,7 +147,7 @@ https://www.wanghaoyi.com/blockchain/blockchain-app/token/
 
 ### 零知证明
 
-> 参考[零知识证明资料](区块链技术栈/零知证明)
+> 参考https://github.com/blockchainGuide/zkp_tech.git
 
 ## 区块链架构
 
@@ -168,10 +169,9 @@ https://www.wanghaoyi.com/blockchain/blockchain-app/token/
 
 - 安全多方计算
 - 同态加密
-- 零知识证明 
-  - [阿里巴巴的零知识证明](http://songshuhui.net/archives/36968)
+- 零知识证明 ：https://github.com/blockchainGuide/zkp_tech.git
 
-### 跨链技术
+### 跨链
 
 #### 侧链/中继
 
