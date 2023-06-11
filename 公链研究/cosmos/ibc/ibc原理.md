@@ -14,8 +14,6 @@ https://ibc.cosmos.network/main/ibc/overview.html
 
 https://github.com/tendermint/tendermint
 
-https://github.com/ChorusOne/tendermint-sol 项目停止了
-
 ## ibc app 
 
 https://github.com/cosmos/ibc/pull/615/files
@@ -30,8 +28,8 @@ https://ibcprotocol.dev/documentation
 
 
 
-## 
+## zk&modular-IBC 
 
+针对异构链,并且和celestia合作
 
-
-- [ ] : 
+https://polymerlabs.medium.com/blockchain-bridges-101-a-guide-to-inter-blockchain-communication-ibc-3efc092770b1
