@@ -1,12 +1,30 @@
-> 
+> 本源码分析基于
 >
-> pre Bed-rock
+> optimism : https://github.com/ethereum-optimism/optimism/tree/v1.0.9 
+>
+> Op-geth : https://github.com/ethereum-optimism/op-geth/tree/v1.101105.2 
+>
+> spec : https://github.com/ethereum-optimism/optimism/tree/v1.0.9/specs
 
 # 存款
 
-存款交易也叫存款，是在 L1 上发起并在 L2 上执行的交易。
+存款交易也叫存款，是在 L1 上发起并在 **L2 上执行的交易**。
 
+此存款交易和现有的交易的区别：
 
+- 由L1区块驱动，必须作为协议的一部分
+- 不包含签名
+
+### 存款交易的几个字段
+
+- from：OptimismPortal 合约
+- to:任何20字节地址，在创建合约的情况下，设置为null
+- mint：要在L2上铸造的token
+- value：数量
+- gaslimit :和发出的值相比没有变化，至少为21000
+- isCreation：如果存款交易是合约创建，则设置为true，否则false
+- Data: 根据isCreation, 要么为calldata,要么为合约初始代码
+- isSystemTx: 由汇总节点为具有未计量执行的某些事务设置。用户存款交易为假  TODO
 
 ## L1 存入金额到L2
 
@@ -25,244 +43,164 @@ QA ： finalizeDeposit传输零地址的意思
 
 ### 用户质押
 
+从L1部署的L1StandardBridge.sol 出发，用户通过`depositETH` 将ETH存入到L2的 `msg.sende`r账户
+
 ```solidity
-  
- function depositETH(uint32 _l2Gas, bytes calldata _data) external payable onlyEOA {
-        _initiateETHDeposit(msg.sender, msg.sender, _l2Gas, _data);
-    }
-    
+// L1StandardBridge.sol
+function depositETH(uint32 _l2Gas, bytes calldata _data) external payable onlyEOA {
+_initiateETHDeposit(msg.sender, msg.sender, _l2Gas, _data);
+}
+
+// L1StandardBridge.sol
 function _initiateETHDeposit(
-        address _from,
-        address _to,
-        uint32 _l2Gas,
-        bytes memory _data
-    ) internal {
-        bytes memory message = abi.encodeWithSelector(
-            IL2ERC20Bridge.finalizeDeposit.selector,
-            address(0),
-            Lib_PredeployAddresses.OVM_ETH,
-            _from,      // 从L1提取存款的帐户 msg.sender
-            _to,        // L2上的存款账户 
-            msg.value,
-            _data
-        );
+address _from,
+address _to,
+uint32 _minGasLimit,
+bytes memory _extraData
+) internal {
+_initiateBridgeETH(_from, _to, msg.value, _minGasLimit, _extraData);
+}   
 
-        // Send calldata into L2
-        sendCrossDomainMessage(l2TokenBridge, _l2Gas, message);
-        emit ETHDepositInitiated(_from, _to, msg.value, _data);
-    }
+// StandardBridge.sol 
+function _initiateBridgeETH(
+  address _from,
+  address _to,
+  uint256 _amount,
+  uint32 _minGasLimit,
+  bytes memory _extraData
+) internal {
+  ...
+  // 只能由L2上的Bridge 合约来执行最终的转账
+  MESSENGER.sendMessage{ value: _amount }(
+      address(OTHER_BRIDGE),
+      abi.encodeWithSelector(
+          this.finalizeBridgeETH.selector,
+          _from,
+          _to,
+          _amount,
+          _extraData
+      ),
+      _minGasLimit
+  );
+}
 
-```
+//  StandardBridge.sol 
+function finalizeBridgeETH(
+  address _from,
+  address _to,
+  uint256 _amount,
+  bytes calldata _extraData
+) public payable onlyOtherBridge {
+  require(msg.value == _amount, "StandardBridge: amount sent does not match amount required");
+  require(_to != address(this), "StandardBridge: cannot send to self");
+  require(_to != address(MESSENGER), "StandardBridge: cannot send to messenger");
 
-```solidity
-//finalizeDeposit 完成从L1到L2的存款，并将资金记入该L2代币的接收者余额。如果该调用不是来自L1StandardTokenBridge中的相应存款，则该调用将失败。这个只能跨链账户去调用,将相同数量的金额存入到L2的账户
-function finalizeDeposit(
-        address _l1Token,  // 用于调用的l1令牌的地址
-        address _l2Token,  // 用于调用的l2令牌的地址
-        address _from,     // 从L2提取存款的帐户。
-        address _to,       // 接收取款的地址
-        uint256 _amount,
-        bytes calldata _data
-    ) external;
-```
+  _emitETHBridgeFinalized(_from, _to, _amount, _extraData);
 
-用户质押ETH，将钱打入L1桥里，L1桥会构造一个在L2桥上执行的消息（finalizeDeposit），通过L1的跨链信使（L1CrossDomainManager）发送消息给L2桥, CTC合约会将消息等信息hash作为一笔**op交易**记录到CTC合约中。同时我们在过段时间也能知道这笔OP交易打在L1的哪个区块中。
+  // 这个是将代币转入到L2的 _to 地址中
+  bool success = SafeCall.call(_to, gasleft(), _amount, hex"");
+  require(success, "StandardBridge: ETH transfer failed");
+}
 
-到了这里实际是L1的合约跨链调用L2 的合约， sendCrossDomainMessage(l2TokenBridge, _l2Gas, message);，调用的CrossDomainEnabled（专门做跨链消息传送的合约）
-
-```solidity
-// L1StandardBridge
-// Send calldata into L2
-sendCrossDomainMessage(l2TokenBridge, _l2Gas, message);
-
-function sendCrossDomainMessage(
-        address _crossDomainTarget,  // l2TokenBridge地址
-        uint32 _gasLimit,
-        bytes memory _message
-    ) internal {
-        getCrossDomainMessenger().sendMessage(_crossDomainTarget, _message, _gasLimit);
-    }
-```
-
-
-
-其实到这里，组装了一个调用消息，是让L2去调用自己的方法，包括L2的合约地址，L2gas和L2的ABI信息（传入了L1的参数），
-
-最终会把组装的调用消息交给跨链合约。
-
-跨链合约主要做了以下事情：
-
-- 将CTC队列目前长度作为nonce 
-- 构造跨链calldata（编码的跨链da ta中的m s g.sender应该是L1桥的地址）
-- **发送跨链消息（最终出口）**给CanonicalTransactionChain（**L1上的合约**） 合约， 同时会将此消息存储在CanonicalTransactionChain合约上通过enqueue，这样L1上的工作完成，L1保存了这个消息
-  - enqueue 会将整个L1存入token的一连串的数据包括发送者，L2目标token合约，交易data keccak256作为一笔交易以及时间戳和当前区块打包成Elements存入CanonicalTransactionChain，并触发TransactionEnqueued事件（此事件由DTL监听）
-- ovmCanonicalTransactionChain（预先部署） 合约地址：0x4200000000000000000000000000000000000007
-
-```solidity
-// L1CrossDomainMessenger.sol
+// CrossDomainMessenger.sol
 function sendMessage(
-        address _target,
-        bytes memory _message,
-        uint32 _gasLimit
-    ) public {
-        address ovmCanonicalTransactionChain = resolve("CanonicalTransactionChain");
-        // Use the CTC queue length as nonce
-        uint40 nonce = ICanonicalTransactionChain(ovmCanonicalTransactionChain).getQueueLength();
+  address _target,  // L2上的Bridge合约
+  bytes calldata _message,
+  uint32 _minGasLimit
+) external payable {
+  // 向另一个信使发送消息
+  _sendMessage(
+      OTHER_MESSENGER,
+      baseGas(_message, _minGasLimit),
+      msg.value,
+      abi.encodeWithSelector(
+          this.relayMessage.selector,
+          messageNonce(),
+          msg.sender,
+          _target,
+          msg.value,
+          _minGasLimit,
+          _message
+      )
+  );
 
-        bytes memory xDomainCalldata = Lib_CrossDomainUtils.encodeXDomainCalldata(
-            _target, // L2tokenBridge
-            msg.sender,  // L1DomainMessenger
-            _message,  // 存款消息
-            nonce
-        );
+  emit SentMessage(_target, msg.sender, _message, messageNonce(), _minGasLimit);
+  emit SentMessageExtension1(msg.sender, msg.value);
 
-        _sendXDomainMessage(ovmCanonicalTransactionChain, xDomainCalldata, _gasLimit);
-        
-        emit SentMessage(_target, msg.sender, _message, nonce, _gasLimit);
-    }
-```
+  unchecked {
+      ++msgNonce;
+  }
+}
 
-```solidity
-    function _sendXDomainMessage(
-        address _canonicalTransactionChain,
-        bytes memory _message,
-        uint256 _gasLimit
-    ) internal {
-        ICanonicalTransactionChain(_canonicalTransactionChain).enqueue(
-            Lib_PredeployAddresses.L2_CROSS_DOMAIN_MESSENGER, // 将交易发送到的目标L2合同
-            _gasLimit,
-            _message
-        );
-    }
-```
+function _sendMessage(
+  address _to,
+  uint64 _gasLimit,
+  uint256 _value,
+  bytes memory _data
+) internal override {
+  PORTAL.depositTransaction{ value: _value }(_to, _value, _gasLimit, false, _data);
+}
 
-将一笔交易添加到队列：
-
-- calldata的数据不要大于50000字节
-- L2 tx gas 相关最大100000
-- 触发 TransactionEnqueued事件
-
-```solidity
-    function enqueue(
-        address _target, // L2DomainMessager 
-        uint256 _gasLimit,
-        bytes memory _data  // 消息数据，包括L2tokenBridge消息，value，from to 等等
-    ) external {
+  function depositTransaction(
+    address _to,
+    uint256 _value,
+    uint64 _gasLimit,
+    bool _isCreation,
+    bytes memory _data
+) public payable metered(_gasLimit) {
+    // Just to be safe, make sure that people specify address(0) as the target when doing
+    // contract creations.
+    if (_isCreation) {
         require(
-            _data.length <= MAX_ROLLUP_TX_SIZE,
-            "Transaction data size exceeds maximum for rollup transaction."
+            _to == address(0),
+            "OptimismPortal: must send to address(0) when creating a contract"
         );
-
-        require(
-            _gasLimit <= maxTransactionGasLimit,
-            "Transaction gas limit exceeds maximum for rollup transaction."
-        );
-
-        require(_gasLimit >= MIN_ROLLUP_TX_GAS, "Transaction gas limit too low to enqueue.");
-
-        if (_gasLimit > enqueueL2GasPrepaid) {
-            uint256 gasToConsume = (_gasLimit - enqueueL2GasPrepaid) / l2GasDiscountDivisor;
-            uint256 startingGas = gasleft();
-            require(startingGas > gasToConsume, "Insufficient gas for L2 rate limiting burn.");
-
-            uint256 i;
-            while (startingGas - gasleft() < gasToConsume) {
-                i++;
-            }
-        }
-        address sender;
-        if (msg.sender == tx.origin) {
-            sender = msg.sender;
-        } else {
-            sender = AddressAliasHelper.applyL1ToL2Alias(msg.sender);
-        }
-
-        bytes32 transactionHash = keccak256(abi.encode(sender, _target, _gasLimit, _data));
-
-        queueElements.push(
-            Lib_OVMCodec.QueueElement({
-                transactionHash: transactionHash,
-                timestamp: uint40(block.timestamp), // 当前区块时间戳
-                blockNumber: uint40(block.number)  // 当前区块高度
-            })
-        );
-        uint256 queueIndex = queueElements.length - 1;
-        emit TransactionEnqueued(sender, _target, _gasLimit, _data, queueIndex, block.timestamp);
     }
 
-```
+    // Prevent depositing transactions that have too small of a gas limit. Users should pay
+    // more for more resource usage.
+    require(
+        _gasLimit >= minimumGasLimit(uint64(_data.length)),
+        "OptimismPortal: gas limit too small"
+    );
 
-DTL组件是由typescript写的，TransactionEnqueued事件的处理如下,会解析事件并查出calldata,写入数据库
+    // Prevent the creation of deposit transactions that have too much calldata. This gives an
+    // upper limit on the size of unsafe blocks over the p2p network. 120kb is chosen to ensure
+    // that the transaction can fit into the p2p network policy of 128kb even though deposit
+    // transactions are not gossipped over the p2p network.
+    require(_data.length <= 120_000, "OptimismPortal: data too large");
 
-```typescript
-export const handleEventsTransactionEnqueued: EventHandlerSet<
-  TransactionEnqueuedEvent,
-  null,
-  EnqueueEntry
-> = {
-  getExtraData: async () => {
-    return null
-  },
-  parseEvent: (event) => {
-    return {
-      index: event.args._queueIndex.toNumber(),
-      target: event.args._target,
-      data: event.args._data,
-      gasLimit: event.args._gasLimit.toString(),
-      origin: event.args._l1TxOrigin,
-      blockNumber: BigNumber.from(event.blockNumber).toNumber(),
-      timestamp: event.args._timestamp.toNumber(),
-      ctcIndex: null,
+    // Transform the from-address to its alias if the caller is a contract.
+    address from = msg.sender;
+    if (msg.sender != tx.origin) {
+        from = AddressAliasHelper.applyL1ToL2Alias(msg.sender);
     }
-  },
-  storeEvent: async (entry, db) => {
-    ...
-    await db.putEnqueueEntries([entry])
-  },
+
+    // Compute the opaque data that will be emitted as part of the TransactionDeposited event.
+    // We use opaque data so that we can update the TransactionDeposited event in the future
+    // without breaking the current interface.
+    bytes memory opaqueData = abi.encodePacked(
+        msg.value,
+        _value,
+        _gasLimit,
+        _isCreation,
+        _data
+    );
+
+    // Emit a TransactionDeposited event so that the rollup node can derive a deposit
+    // transaction for this deposit.
+    emit TransactionDeposited(from, _to, DEPOSIT_VERSION, opaqueData);
 }
 ```
 
-接着就是L2geth(sequencer)从DTL同步`TransactionEnqueued` 事件，转为交易并执行,这部分在L2geth/rollup/sync_service下面，专门由SequencerLoop执行（前提是配置为不是验证者。）这里同步事件实际还在依赖以太坊上的处理速度 ，但是从L1质押到L2应该不是很平常的动作，无所谓。
+用户质押交易最终会在L2上被执行，L2上的信使会调用消息，通过Bridge来转账给L2上的reciveer,最终的跨链调用数据都会保存在opaqueData， 通过事件 emit TransactionDeposited(from, _to, DEPOSIT_VERSION, opaqueData); 被op-node 解析出来并调用op-geth去执行，从而实现跨链合约调用。
 
-L2geth 里面存储着一个rollupclient,用来对DTL进行Http请求的。请求注册的路由在DTL/service.ts ， Rollup节点和DTL建立HTTP连接。
+Op-geth 调用evm 执行了上述 depositTx , 继续要看L2相关的合约。 
 
-```go
-//SequencerLoop 是在 sequencer 模式下运行的轮询循环。它排序
-//交易，然后更新 EthContext。
 
-func (s *SyncService) SequencerLoop() {
-  ...
-	s.sequence();
-  ...
-}
-```
-
-执行交易主要由s.applyTransaction(tx)实现，会调用applyIndexedTransaction，交易的来源是指L1 batch，或者是sequencer同步DTL中的Transactionenqueued事件的交易。
-
-```go
-func (s *SyncService) syncQueueTransactionRange(start, end uint64) error {
-	log.Info("Syncing enqueue transactions range", "start", start, "end", end)
-	for i := start; i <= end; i++ {
-		tx, err := s.client.GetEnqueue(i)
-		if err != nil {
-			return fmt.Errorf("Canot get enqueue transaction; %w", err)
-		}
-		if err := s.applyTransaction(tx); err != nil {
-			return fmt.Errorf("Cannot apply transaction: %w", err)
-		}
-	}
-	return nil
-}
-```
-
-applyTransaction分为 applyTransactionToTip 和applyIndexedTransaction ，两种处理方式不一样，下面来单独分析下：现在我还不能确定tx.meta到底有没有赋值 ,有赋值，从syncTransactionRange看
-
-applyTransactionToTip：
 
 ```go
 ```
-
-
 
 
 

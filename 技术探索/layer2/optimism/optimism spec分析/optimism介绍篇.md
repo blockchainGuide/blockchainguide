@@ -20,7 +20,7 @@ EVM Equivalence 完全符合以太坊黄皮书描述的状态转换函数，协�
 
 users, sequencers, and verifiers.
 
-<img src="/Users/carver/Library/Application Support/typora-user-images/image-20230203105146447.png" alt="image-20230203105146447" style="zoom:25%;" />
+![网络参与者](https://github.com/ethereum-optimism/optimism/blob/65ec61dde94ffa93342728d324fecf474d228e1f/specs/assets/network-participants-overview.svg)
 
 -----
 
@@ -32,27 +32,23 @@ user：
 
 Sequencer:
 
-Sequencer是主要的块生产者。可能有一个或多个使用共识协议的Sequencer。对于 1.0.0，只有一个排序器（目前在 Optimism Foundation 的监督下运行）。通常，规范可能会使用“定序器”作为由多个定序器操作的共识协议的替代术语。
+Sequencer是主要的块生产者。可能有一个或多个使用共识协议的Sequencer。对于 1.0.0，只有一个排序器（目前在 Optimism Foundation 的监督下运行）。通常，规范可能会使用“定序器”作为由多个定序器操作的共识协议的替代术语。<!--这部分优化实际可以通过共识方式来优化，利用cometBFT 共识-->
 
-
-
-🚩 这部分无法解释清楚🚩
-
-1. 接受用户链下交易
+1. 接受用户链下交易（L2）
 2. 观察链上交易（主要是来自 L1 的存款事件）
-3. 将两种交易合并到具有特定顺序的 L2 块中。
+3. 将**两种交易合并到具有特定顺序的 L2** 块中。
 4. 通过将两个东西作为calldata提交给 L1，将合并的 L2 块传播到 L1：
    - 在步骤 1 中接受的pending链下交易。
    - 关于链上交易顺序的足够信息，以成功重建步骤 3 中的块，完全通过观察 L1
 
-排序器还提供早在步骤 3. 中访问块数据的权限，以便用户可以选择在 L1 确认之前访问实时状态。
+Sequencer还提供早在步骤 3. 中访问块数据的权限，以便用户可以选择在 L1 确认之前访问实时状态。
 
 Verifiers:
 
 - 向用户提供rollup数据；和
 - 验证rollup完整性并争论无效断言。
 
-为了让网络保持安全，必须**至少有一个诚实的验证者**能够验证汇总链的完整性并为用户提供区块链数据。
+为了让网络保持安全，必须**至少有一个诚实的验证者**能够验证rollup链的完整性并为用户提供区块链数据。
 
 ### 关键交互图
 
@@ -62,7 +58,7 @@ Verifiers:
 
 用户通常会通过从 L1 存入 ETH 来开始他们的 L2 旅程。一旦他们有 ETH 来支付费用，他们就会开始在 L2 上发送交易。下图演示了这种交互以及所有已使用或应该使用的关键 Optimism 组件：
 
-<img src="/Users/carver/Library/Application Support/typora-user-images/image-20230203111801122.png" alt="image-20230203111801122" style="zoom:25%;" />
+<img src="https://github.com/ethereum-optimism/optimism/blob/65ec61dde94ffa93342728d324fecf474d228e1f/specs/assets/sequencer-handling-deposits-and-transactions.svg" style="zoom:25%;" />
 
 这个图中涉及到的组件链接
 
@@ -76,7 +72,7 @@ Verifiers:
 
 与存款一样重要的是，用户可以从rollup中退出是至关重要的。提款由 L2 上的正常交易发起，但在争议期结束后使用 L1 上的交易完成。
 
-<img src="/Users/carver/Library/Application Support/typora-user-images/image-20230203112021810.png" alt="image-20230203112021810" style="zoom:25%;" />
+<img src="https://github.com/ethereum-optimism/optimism/blob/65ec61dde94ffa93342728d324fecf474d228e1f/specs/assets/user-withdrawing-to-l1.svg" style="zoom:25%;" />
 
 这个图中涉及到的组件链接
 

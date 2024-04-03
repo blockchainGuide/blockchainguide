@@ -1,10 +1,16 @@
-> 本系列基于 **Pre-Bedrock** 分析
+> 本源码分析基于
+>
+> optimism : https://github.com/ethereum-optimism/optimism/tree/v1.0.9 
+>
+> op-geth : https://github.com/ethereum-optimism/op-geth/tree/v1.101105.2 
+>
+> spec : https://github.com/ethereum-optimism/optimism/tree/v1.0.9/specs
 
 ## 介绍
 
 Optimism 是一种layer2可扩展性技术，可在不牺牲安全性或分散性的情况下增加以太坊的计算和存储容量。交易数据在链上提交但在链下执行。如果链下执行出现错误，可以在链上提交欺诈证明来纠正错误，保护用户资金。同样，除非有争议，否则你不会上法庭，除非出现错误，否则你不会在链上执行交易。 它利用其父链（ethereum）的共识机制（如 PoW 或 PoS）保证安全性，而不是提供自己的共识机制。
 
-整体架构如下：
+组件如下：
 
 ![image-20230305124747665](https://p.ipic.vip/1jtt0z.png)
 
@@ -12,40 +18,51 @@ Optimism 是一种layer2可扩展性技术，可在不牺牲安全性或分散�
 
 ### L1组件
 
-- **DepositFeed**
-  - 合约`DepositFeed`发出`TransactionDeposited`事件，汇总驱动程序读取这些事件以处理存款。
+- **OptimismPortal**
+  - 合约`OptimismPortal`发出`TransactionDeposited`事件，rollup driver 读取这些事件在L2上进行处理。
   - *存款保证在排序窗口*内反映在 L2 状态中
   - 存入的是*交易*，而不是代币。然而，存款交易是实现代币存款的关键部分（代币在 L1 上锁定，然后通过存款交易在 L2 上铸造）
 - **BatchInbox**：Batch Submitter 向其提交交易批次的 L1 地址。
-  - 交易批次包括 L2 交易调用数据、时间戳和order信息。
+  - 交易batch 包括 L2 交易calldata、时间戳和order信息。
   - BatchInbox 是一个常规的 EOA 地址。这让我们可以通过不执行任何 EVM 代码来节省 gas 成本
-- **L2OutputOracle**：一种智能合约，存储[L2 输出根](https://github.com/ethereum-optimism/optimism/blob/develop/specs/glossary.md#l2-output)以用于取款和故障证明。
+- **L2OutputOracle**：一种智能合约，存储[L2 输出根](https://github.com/ethereum-optimism/optimism/blob/develop/specs/glossary.md#l2-output)以**用于取款和故障证明**。
 
 ## L2组件
 
-- rollup 节点
-  - 一个独立的、无状态的二进制文件。
+- **rollup node**
+  - 一个独立的、**无状态**的二进制文件， 状态存储在op-geth上。
   - 接收来自用户的 L2 交易。
-  - 同步并验证 L1 上的汇总数据。
+  - 同步并验证 L1 上的rollup数据。
   - 应用特定于 rollup 的块生产规则从 L1 合成块。
   - 使用引擎 API 将块附加到 L2 链。
   - 处理 L1 重组。
-  - 将未提交的块分发到其他汇总节点
-- 执行引擎EE：
+  - 将未提交的块分发到其他rollup nodes 
+- **Execution Engine**：
   - 修改过的Geth节点
-  - 保持L2状态
+  - 保存L2状态
   - 同步状态到其他L2节点
   - 将引擎 API 提供给rollup节点
-- 批量交易提交者
-  - [将交易批次](https://github.com/ethereum-optimism/optimism/blob/develop/specs/glossary.md#sequencer-batch)提交到地址的后台进程`BatchInbox`
-- 输出提交器
-  - 将 L2 输出承诺提交给`L2OutputOracle`.
-
-
+- **Batch Submitter**
+  - [将交易批次](https://github.com/ethereum-optimism/optimism/blob/develop/specs/glossary.md#sequencer-batch)提交到 L1 BatchInbox 地址的后台进程
+- **Output Submitter**
+  - 将 L2 输出承诺提交给`L2OutputOracle`的后台 进程
 
 sequencer 和 verifier 交互：
 
-![image-20230307154045630](https://p.ipic.vip/xzrcao.png)
+![交互](https://github.com/ethereum-optimism/optimism/blob/v1.0.9/specs/assets/components.svg)
+
+## Epochs和测序窗口
+
+rollup 驱动程序实际上并不创建块。相反，它通过引擎 API 指示执行引擎执行此操作。对于上述块派生循环的每次迭代，汇总驱动程序将制作*有效负载属性* 对象并将其发送到执行引擎。然后，执行引擎会将有效负载属性对象转换为块，并将其添加到链中。rollup 驱动程序的基本顺序如下：
+
+1. `engine_forkChoiceUpdatedV1`使用有效负载属性对象进行调用。我们现在将跳过分叉选择状态参数的细节 - 只需知道它的字段之一是 L2 链的`headBlockHash`，并且它被设置为 L2 链尖端的块哈希。引擎 API 返回有效负载 ID。
+2. 使用步骤 1 中返回的有效负载 ID进行调用。`engine_getPayloadV1`引擎 API 返回一个有效负载对象，其中包含块哈希作为其字段之一。
+3. `engine_newPayloadV1`使用步骤 2 中返回的负载进行调用。
+4. 将`engine_forkChoiceUpdatedV1`分叉选择参数`headBlockHash`设置为步骤 2 中返回的块哈希进行调用。L2 链的尖端现在是步骤 1 中创建的块。
+
+下面的泳道图直观地展示了该过程：
+
+![rollup driver](https://github.com/ethereum-optimism/optimism/raw/v1.0.9/specs/assets/engine.svg)
 
 ## 参与者
 
@@ -129,6 +146,8 @@ Optimism 客户端软件持续监控新索引块的 DTL。当一个新块被索�
 [2] : [evm Equivalence](https://medium.com/ethereum-optimism/introducing-evm-equivalence-5c2021deb306)
 
 [3] : [spec](https://github.com/ethereum-optimism/optimistic-specs)
+
+[4] : [降低layer2DA存储成本](https://eips.ethereum.org/EIPS/eip-4844)
 
 
 
