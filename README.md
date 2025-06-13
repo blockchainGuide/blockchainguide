@@ -105,13 +105,22 @@ https://www.wanghaoyi.com/blockchain/blockchain-app/token/
 
 -------
 
-## Hyperledger Fabric
+## solana
 
-### fabric 详解
 
-[fabric介绍](http://wutongtree.github.io/translations/Next-Consensus-Architecture-Proposal_zh)
 
--------
+- [Solana 2024 BootCamp](https://www.youtube.com/playlist?list=PLilwLeBwGuK7HN8ZnXpGAD9q6i4syhnVc)
+- [Boot Camp code](https://github.com/solana-developers/developer-bootcamp-2024)
+- [solana 开发问题集锦](https://solana.stackexchange.com/)
+- [anchor测试框架](https://github.com/kevinheavey/anchor-bankrun)
+
+
+
+----
+
+
+
+
 
 ## 比特币
 
@@ -224,3 +233,10 @@ filecoin开发文档：https://docs.filecoin.io/
 ## 区块链如何解决一些问题
 
 - 如何保证上链数据是安全的 预言机
+
+
+
+
+
+
+

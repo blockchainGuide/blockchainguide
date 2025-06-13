@@ -18,5 +18,3 @@
 - [ ] [VDF](https://vdfresearch.org/)
 
 
-
-- 
