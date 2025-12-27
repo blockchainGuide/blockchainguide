@@ -43,7 +43,7 @@
               },
               "pinned": true,
               "icon": "terminal",
-              "title": "终端：✳ README完善"
+              "title": "终端：✳ 中文与图表要求"
             }
           },
           {
@@ -86,17 +86,31 @@
             }
           },
           {
-            "id": "79a90e29787ec845",
+            "id": "c89dd29367efaef6",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "README.md",
+                "file": "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "README"
+              "title": "01-概述与集中流动性"
+            }
+          },
+          {
+            "id": "c57e84917d3f5c63",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DApp_Development/应用场景/defi/uniswap/v3/02-Tick机制与价格数学.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "02-Tick机制与价格数学"
             }
           }
         ],
@@ -263,8 +277,33 @@
   },
   "active": "b60ddbb2334189af",
   "lastOpenFiles": [
+    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/README.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/03-架构与合约设计.md.tmp.27568.1766819294732",
+    "DApp_Development/应用场景/defi/uniswap/v3/02-Tick机制与价格数学.md.tmp.27568.1766818869998",
+    "DApp_Development/应用场景/defi/uniswap/v3/02-Tick机制与价格数学.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md.tmp.27568.1766818465056",
+    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md.tmp.27568.1766818419342",
+    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md.tmp.27568.1766818394559",
+    "DApp_Development/应用场景/defi/uniswap/v3/07-MEV与套利策略.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/死磕uniswap-v3.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/06-费用系统与预言机.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/05-流动性管理与头寸.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/04-交换机制深度解析.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/05-流动性管理与头寸.md.tmp.27568.1766817308831",
+    "DApp_Development/应用场景/defi/uniswap/v3/03-架构与合约设计.md",
+    "DApp_Development/应用场景/defi/uniswap/v3/04-交换机制深度解析.md.tmp.27568.1766816992961",
+    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md.tmp.27568.1766815886887",
+    "死磕 uniswap -v3.md",
+    "未命名.md",
+    "DApp_Development/应用场景/defi/永续期货合约.md",
+    "DApp_Development/应用场景/defi/uniswap/v2/uniswap_v2_Factory.md",
+    "DApp_Development/应用场景/defi/uniswap/v3",
+    "未命名",
+    "DApp_Development/应用场景/defi/uniswap/v2/uniswap_v2_概念.md",
+    "DApp_Development/应用场景/defi/uniswap/v2/uniswap_v2_部署.md",
+    "DApp_Development/应用场景/defi/uniswap/v2/uniswap_v2_Router02.md",
     "Excalidraw/Drawing 2025-12-27 13.32.00.excalidraw.md",
-    "Excalidraw",
     "README.md",
     "Public_Chain_Development/Public_Chain_Research/Ethereum/以太坊源码分析/死磕以太坊源码分析之MPT树-下-14.md",
     "Public_Chain_Development/Public_Chain_Research/Ethereum/以太坊源码分析/死磕以太坊源码分析之EVM动态数据类型-21.md",
