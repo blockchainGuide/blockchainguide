@@ -24,30 +24,34 @@ MEV（Maximal Extractable Value，最大可提取价值）是指矿工/验证者
 
 ```mermaid
 flowchart TB
-    subgraph MEV来源
+    subgraph SourceGroup["MEV来源"]
         S1[交易排序权力]
         S2[区块打包权力]
         S3[交易可见性]
     end
 
-    subgraph MEV类型
+    subgraph TypeGroup["MEV类型"]
         T1[套利]
         T2[三明治攻击]
         T3[清算]
         T4[JIT流动性]
     end
 
-    subgraph 参与者
+    subgraph ParticipantGroup["参与者"]
         P1[矿工/验证者]
         P2[搜索者]
         P3[套利机器人]
     end
 
-    S1 & S2 & S3 --> MEV类型
-    MEV类型 --> P1 & P2 & P3
+    S1 --> TypeGroup
+    S2 --> TypeGroup
+    S3 --> TypeGroup
+    TypeGroup --> P1
+    TypeGroup --> P2
+    TypeGroup --> P3
 
-    style MEV来源 fill:#ffcdd2
-    style MEV类型 fill:#fff3e0
+    style SourceGroup fill:#ffcdd2
+    style TypeGroup fill:#fff3e0
 ```
 
 ### 1.2 V3中的MEV特点
@@ -120,14 +124,14 @@ sequenceDiagram
 
 ```mermaid
 flowchart TD
-    subgraph 攻击条件
+    subgraph ConditionGroup["攻击条件"]
         C1[交易金额足够大]
         C2[滑点设置较宽松]
         C3[流动性深度适中]
         C4[Gas成本可承受]
     end
 
-    subgraph 利润计算
+    subgraph ProfitGroup["利润计算"]
         P1[买入成本]
         P2[价格影响]
         P3[卖出收益]
@@ -135,9 +139,14 @@ flowchart TD
         PROFIT[利润 = P3 - P1 - P4]
     end
 
-    C1 & C2 & C3 & C4 --> 利润计算
-    P1 & P2 --> P3
-    P3 & P4 --> PROFIT
+    C1 --> ProfitGroup
+    C2 --> ProfitGroup
+    C3 --> ProfitGroup
+    C4 --> ProfitGroup
+    P1 --> P3
+    P2 --> P3
+    P3 --> PROFIT
+    P4 --> PROFIT
 
     style PROFIT fill:#c8e6c9
 ```
@@ -272,23 +281,29 @@ sequenceDiagram
 
 ```mermaid
 flowchart TB
-    subgraph 攻击者收益
+    subgraph RevenueGroup["攻击者收益"]
         R1[手续费收入]
         R2[无常损失]
         R3[Gas成本]
         NET[净收益 = R1 - R2 - R3]
     end
 
-    subgraph 关键因素
+    subgraph FactorGroup["关键因素"]
         F1[交易金额]
         F2[区间宽度]
         F3[流动性数量]
         F4[现有流动性]
     end
 
-    F1 & F2 & F3 & F4 --> R1
-    F2 & F3 --> R2
-    NET
+    F1 --> R1
+    F2 --> R1
+    F3 --> R1
+    F4 --> R1
+    F2 --> R2
+    F3 --> R2
+    R1 --> NET
+    R2 --> NET
+    R3 --> NET
 
     style NET fill:#fff3e0
 ```
@@ -338,26 +353,32 @@ function analyzeJITProfit(JITAnalysis memory params)
 
 ```mermaid
 flowchart TD
-    subgraph 有利条件
+    subgraph FavorableGroup["有利条件"]
         A1[交易金额大]
         A2[现有流动性低]
         A3[费率高]
         A4[Gas价格低]
     end
 
-    subgraph 不利条件
+    subgraph UnfavorableGroup["不利条件"]
         B1[交易金额小]
         B2[现有流动性高]
         B3[费率低]
         B4[Gas价格高]
     end
 
-    subgraph 决策
+    subgraph DecisionGroup["决策"]
         D{是否执行JIT?}
     end
 
-    A1 & A2 & A3 & A4 -->|有利| D
-    B1 & B2 & B3 & B4 -->|不利| D
+    A1 -->|有利| D
+    A2 -->|有利| D
+    A3 -->|有利| D
+    A4 -->|有利| D
+    B1 -->|不利| D
+    B2 -->|不利| D
+    B3 -->|不利| D
+    B4 -->|不利| D
 
     D -->|是| EXECUTE[执行攻击]
     D -->|否| SKIP[放弃]
@@ -407,22 +428,25 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph 价格差异来源
+    subgraph SourceGroup["价格差异来源"]
         S1[不同DEX价格差]
         S2[同DEX不同费率池]
         S3[跨链价格差]
         S4[CEX与DEX价差]
     end
 
-    subgraph 套利类型
+    subgraph TypeGroup["套利类型"]
         T1[两点套利]
         T2[三角套利]
         T3[闪电贷套利]
     end
 
-    S1 & S2 & S3 & S4 --> 套利类型
+    S1 --> TypeGroup
+    S2 --> TypeGroup
+    S3 --> TypeGroup
+    S4 --> TypeGroup
 
-    style 套利类型 fill:#e3f2fd
+    style TypeGroup fill:#e3f2fd
 ```
 
 ### 4.2 两点套利
@@ -704,21 +728,23 @@ V3的Tick边界是套利的重要机会点：
 
 ```mermaid
 flowchart TB
-    subgraph Tick边界特点
+    subgraph TickGroup["Tick边界特点"]
         T1[流动性突变点]
         T2[价格离散化]
         T3[滑点不连续]
     end
 
-    subgraph 套利机会
+    subgraph OppGroup["套利机会"]
         O1[跨tick价差]
         O2[流动性缺口]
         O3[临界点套利]
     end
 
-    T1 & T2 & T3 --> 套利机会
+    T1 --> OppGroup
+    T2 --> OppGroup
+    T3 --> OppGroup
 
-    style 套利机会 fill:#fff3e0
+    style OppGroup fill:#fff3e0
 ```
 
 ### 5.2 流动性缺口套利
@@ -902,32 +928,35 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    subgraph 数据层
+    subgraph DataLayer["数据层"]
         D1[区块链节点]
         D2[内存池监控]
         D3[价格Feed]
     end
 
-    subgraph 分析层
+    subgraph AnalysisLayer["分析层"]
         A1[机会识别]
         A2[利润计算]
         A3[风险评估]
     end
 
-    subgraph 执行层
+    subgraph ExecLayer["执行层"]
         E1[交易构建]
         E2[Gas优化]
         E3[执行策略]
     end
 
-    subgraph 基础设施
+    subgraph InfraLayer["基础设施"]
         I1[低延迟节点]
         I2[私有交易池]
         I3[监控告警]
     end
 
-    数据层 --> 分析层 --> 执行层
-    基础设施 --> 数据层 & 分析层 & 执行层
+    DataLayer --> AnalysisLayer
+    AnalysisLayer --> ExecLayer
+    InfraLayer --> DataLayer
+    InfraLayer --> AnalysisLayer
+    InfraLayer --> ExecLayer
 ```
 
 ### 7.2 机会监控
@@ -1135,33 +1164,40 @@ contract OptimizedArbitrage {
 
 ```mermaid
 flowchart TB
-    subgraph 技术风险
+    subgraph TechGroup["技术风险"]
         T1[合约漏洞]
         T2[重入攻击]
         T3[预言机操纵]
     end
 
-    subgraph 市场风险
+    subgraph MarketGroup["市场风险"]
         M1[价格剧烈波动]
         M2[流动性枯竭]
         M3[竞争失败]
     end
 
-    subgraph 执行风险
+    subgraph ExecGroup["执行风险"]
         E1[交易失败]
         E2[Gas估算错误]
         E3[滑点超限]
     end
 
-    subgraph 运营风险
+    subgraph OpsGroup["运营风险"]
         O1[私钥泄露]
         O2[节点故障]
         O3[网络拥堵]
     end
 
-    技术风险 & 市场风险 & 执行风险 & 运营风险 --> 损失
+    subgraph Result["损失"]
+        LOSS[潜在损失]
+    end
 
-    style 损失 fill:#ffcdd2
+    TechGroup --> Result
+    MarketGroup --> Result
+    ExecGroup --> Result
+    OpsGroup --> Result
+
+    style Result fill:#ffcdd2
 ```
 
 ### 8.2 风险控制措施
