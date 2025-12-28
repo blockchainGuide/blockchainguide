@@ -8,45 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "86ffdb115030496d",
-            "type": "leaf",
-            "pinned": true,
-            "state": {
-              "type": "terminal:terminal",
-              "state": {
-                "terminal:terminal": {
-                  "cwd": "/Users/mac08/workspace/web3qt/blockchainguide",
-                  "focus": false,
-                  "profile": {
-                    "args": [],
-                    "executable": "/bin/zsh",
-                    "name": "",
-                    "platforms": {
-                      "darwin": true
-                    },
-                    "pythonExecutable": "python3",
-                    "restoreHistory": false,
-                    "rightClickAction": "copyPaste",
-                    "successExitCodes": [
-                      "0",
-                      "SIGINT",
-                      "SIGTERM"
-                    ],
-                    "terminalOptions": {
-                      "documentOverride": null
-                    },
-                    "type": "integrated",
-                    "useWin32Conhost": true
-                  },
-                  "serial": null
-                }
-              },
-              "pinned": true,
-              "icon": "terminal",
-              "title": "终端：✳ AAVE V3 分析"
-            }
-          },
-          {
             "id": "b60ddbb2334189af",
             "type": "leaf",
             "pinned": true,
@@ -86,35 +47,45 @@
             }
           },
           {
-            "id": "373bc9fb7d15ef83",
+            "id": "c2691ecceab5f86d",
             "type": "leaf",
+            "pinned": true,
             "state": {
-              "type": "markdown",
+              "type": "terminal:terminal",
               "state": {
-                "file": "DApp_Development/应用场景/defi/uniswap/v2/03-流动性与LP代币.md",
-                "mode": "source",
-                "source": false
+                "terminal:terminal": {
+                  "cwd": "/Users/mac08/workspace/web3qt/blockchainguide",
+                  "focus": false,
+                  "profile": {
+                    "args": [],
+                    "executable": "/bin/zsh",
+                    "name": "",
+                    "platforms": {
+                      "darwin": true
+                    },
+                    "pythonExecutable": "python3",
+                    "restoreHistory": false,
+                    "rightClickAction": "copyPaste",
+                    "successExitCodes": [
+                      "0",
+                      "SIGINT",
+                      "SIGTERM"
+                    ],
+                    "terminalOptions": {
+                      "documentOverride": null
+                    },
+                    "type": "integrated",
+                    "useWin32Conhost": true
+                  },
+                  "serial": null
+                }
               },
-              "icon": "lucide-file",
-              "title": "03-流动性与LP代币"
-            }
-          },
-          {
-            "id": "6c6fdbb43b4e0448",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "DApp_Development/应用场景/defi/aave/README.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "README"
+              "pinned": true,
+              "icon": "terminal",
+              "title": "终端：OC | Analyzing pancake v3 documentation ou..."
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "vertical"
@@ -277,7 +248,18 @@
   },
   "active": "b60ddbb2334189af",
   "lastOpenFiles": [
+    "DApp_Development/应用场景/defi/pancake/v3/07-V3与Uniswap-V3对比.md",
+    "DApp_Development/应用场景/defi/uniswap/v2/03-流动性与LP代币.md",
     "DApp_Development/应用场景/defi/aave/README.md",
+    "DApp_Development/应用场景/defi/pancake/v3/02-Tick机制与价格数学.md",
+    "DApp_Development/应用场景/defi/pancake/v3/04-交换机制深度解析.md",
+    "DApp_Development/应用场景/defi/pancake/v3/06-费用系统与预言机.md",
+    "DApp_Development/应用场景/defi/pancake/v3/05-流动性管理与头寸.md",
+    "DApp_Development/应用场景/defi/pancake/v3/08-多链部署与特性适配.md",
+    "DApp_Development/应用场景/defi/pancake/v3/01-PancakeSwap-V3概述.md",
+    "DApp_Development/应用场景/defi/pancake/v3/03-架构与合约设计.md",
+    "DApp_Development/应用场景/defi/pancake/v3/README.md",
+    "DApp_Development/应用场景/defi/pancake/v3",
     "DApp_Development/应用场景/defi/aave/07-开发者集成指南.md",
     "DApp_Development/应用场景/defi/aave/Avae原理.md",
     "DApp_Development/应用场景/defi/aave/05-高级功能.md",
@@ -295,23 +277,12 @@
     "DApp_Development/应用场景/defi/pancake",
     "DApp_Development/应用场景/defi/uniswap/v2/01-V2概述与核心原理.md",
     "DApp_Development/应用场景/defi/uniswap/v2/README.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/03-流动性与LP代币.md",
     "DApp_Development/应用场景/defi/uniswap/v2/07-安全实践与最佳实践.md",
     "DApp_Development/应用场景/defi/uniswap/v2/07-安全实践与最佳实践.md.tmp.14148.1766824667131",
     "DApp_Development/应用场景/defi/uniswap/v2/06-Router与路由.md",
     "DApp_Development/应用场景/defi/uniswap/v2/05-价格预言机.md",
     "DApp_Development/应用场景/defi/uniswap/v2/05-价格预言机.md.tmp.14148.1766824311459",
     "DApp_Development/应用场景/defi/uniswap/v2/04-交换机制深度解析.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/04-交换机制深度解析.md.tmp.14148.1766824154538",
-    "DApp_Development/应用场景/defi/uniswap/v2/02-Factory与Pair合约.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/README.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/03-单例架构与瞬时会计.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/07-安全分析与最佳实践.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/06-账户抽象与原生ETH.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/01-V4概述与架构革命.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/05-费用系统与动态费率.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/04-交换流程与Hook执行时序.md",
-    "DApp_Development/应用场景/defi/uniswap/v4/02-Hooks机制深度解析.md",
-    "DApp_Development/应用场景/defi/uniswap/v3/01-概述与集中流动性.md"
+    "DApp_Development/应用场景/defi/uniswap/v2/02-Factory与Pair合约.md"
   ]
 }
