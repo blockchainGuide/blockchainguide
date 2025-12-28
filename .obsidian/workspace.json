@@ -84,6 +84,48 @@
               "icon": "terminal",
               "title": "终端：OC | Analyzing pancake v3 documentation ou..."
             }
+          },
+          {
+            "id": "92ea1657d9b4d576",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DApp_Development/应用场景/defi/pancake/v4/README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          },
+          {
+            "id": "40cd6bffed3ae4a5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DApp_Development/应用场景/defi/pancake/v4/README.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "README"
+            }
+          },
+          {
+            "id": "9de099835e871452",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "DApp_Development/应用场景/defi/pancake/v4/07-Hooks实战与最佳实践.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "07-Hooks实战与最佳实践"
+            }
           }
         ]
       }
@@ -248,6 +290,16 @@
   },
   "active": "b60ddbb2334189af",
   "lastOpenFiles": [
+    "DApp_Development/应用场景/defi/pancake/v4/07-Hooks实战与最佳实践.md",
+    "DApp_Development/应用场景/defi/pancake/v4/06-Native-ETH与Gas优化.md",
+    "DApp_Development/应用场景/defi/pancake/v4/08-V3到V4的迁移与升级.md",
+    "DApp_Development/应用场景/defi/pancake/v4/05-动态流动性机制.md",
+    "DApp_Development/应用场景/defi/pancake/v4/04-费用系统的数学推导.md",
+    "DApp_Development/应用场景/defi/pancake/v4/README.md",
+    "DApp_Development/应用场景/defi/pancake/v4/03-Singleton架构与FlashAccounting.md",
+    "DApp_Development/应用场景/defi/pancake/v4/02-Hooks机制详解.md",
+    "DApp_Development/应用场景/defi/pancake/v4/01-V4架构与核心创新.md",
+    "DApp_Development/应用场景/defi/pancake/v4",
     "DApp_Development/应用场景/defi/pancake/v3/07-V3与Uniswap-V3对比.md",
     "DApp_Development/应用场景/defi/uniswap/v2/03-流动性与LP代币.md",
     "DApp_Development/应用场景/defi/aave/README.md",
@@ -268,21 +320,11 @@
     "DApp_Development/应用场景/defi/aave/07-开发者集成指南.md.tmp.40853.1766891980856",
     "DApp_Development/应用场景/defi/aave/06-套利与MEV策略.md",
     "DApp_Development/应用场景/defi/aave/05-高级功能.md.tmp.40853.1766891730445",
-    "DApp_Development/应用场景/defi/aave/04-代币化机制.md",
     "DApp_Development/应用场景/defi/aave/04-代币化机制.md.tmp.40853.1766891597328",
-    "DApp_Development/应用场景/defi/aave/02-借贷机制详解.md",
     "DApp_Development/应用场景/defi/aave/02-借贷机制详解.md.tmp.40853.1766891351189",
     "DApp_Development/应用场景/defi/aave/01-核心概念与架构.md.tmp.40853.1766891195347",
     "DApp_Development/应用场景/defi/aave/README.md.tmp.40853.1766891070598",
     "DApp_Development/应用场景/defi/pancake",
-    "DApp_Development/应用场景/defi/uniswap/v2/01-V2概述与核心原理.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/README.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/07-安全实践与最佳实践.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/07-安全实践与最佳实践.md.tmp.14148.1766824667131",
-    "DApp_Development/应用场景/defi/uniswap/v2/06-Router与路由.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/05-价格预言机.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/05-价格预言机.md.tmp.14148.1766824311459",
-    "DApp_Development/应用场景/defi/uniswap/v2/04-交换机制深度解析.md",
-    "DApp_Development/应用场景/defi/uniswap/v2/02-Factory与Pair合约.md"
+    "DApp_Development/应用场景/defi/uniswap/v2/07-安全实践与最佳实践.md.tmp.14148.1766824667131"
   ]
 }
